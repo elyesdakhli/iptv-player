@@ -1,8 +1,7 @@
-
-import {GlobalInfos, Source} from "../types/Types.ts";
 import {useEffect, useState} from "react";
-import {connect} from "../api/xtreamCodesApi.ts";
 import {Button} from "react-bootstrap";
+import {GlobalInfos, Source} from "../types/Types.ts";
+import {connect} from "../api/xtreamCodesApi.ts";
 import {SourcesManager} from "./SourcesManager.tsx";
 
 export type SourceViewProps = {

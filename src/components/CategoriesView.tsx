@@ -1,10 +1,11 @@
 import {forwardRef, Ref, useEffect, useImperativeHandle, useState} from "react";
 import {Category, Source} from "../types/Types.ts";
-import {Button, Form} from "react-bootstrap";
-import { X } from 'react-bootstrap-icons';
+import {Button, Col, Form, ListGroup, ListGroupItem} from "react-bootstrap";
+import {Search, X} from 'react-bootstrap-icons';
 import * as React from "react";
 import {getCategories} from "../api/xtreamCodesApi.ts";
 import {storageApi} from "../api/storageApi.ts";
+import '../css/categories.css'
 
 export type CategoryViewProps = {
     source: Source | null;
@@ -105,48 +106,55 @@ const CategoriesView = forwardRef(({source, onSelect}: CategoryViewProps, ref: R
 
     return <div className="container">
         <div className="row">
-            {loading &&
-                <>
-                    <div className="spinner-border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
-                </>}
-            {apiError &&
-                <>
-                    <div className="alert alert-danger" role="alert">
-                        Error while getting categories list.
-                    </div>
-                </>}
-        </div>
-        <div className="row p-10">
-            <div className="col-11 p-0">
-                <Form.Control type="text" placeholder="Search category" value={filterValue}
-                              onChange={(event) => handleSearch(event)}/>
+             {loading &&
+                 <>
+                     <div className="spinner-border" role="status">
+                         <span className="visually-hidden">Loading...</span>
+                     </div>
+                 </>}
+             {apiError &&
+                 <>
+                     <div className="alert alert-danger" role="alert">
+                         Error while getting categories list.
+                     </div>
+                 </>}
+         </div>
+         <div className="row p-10 mb-2 flex-box justify-content-center">
+             <Col xs={2}><h4>Categories</h4></Col>
+             <Col xs={2} className="p-10">
+                 <Form.Control type="text" placeholder="Search category" value={filterValue}
+                               onChange={(event) => handleSearch(event)}/>
+             </Col>
+             <Col xs={1} className="p-0">
+                 {filterValue &&
+                     <Button variant="link"
+                             onClick={() => handleClearFilter()}
+                             aria-label="Clear search"
+                             className="p-0">
+                         <X size={18} />
+                     </Button>
+                 }
+             </Col>
+             <Col xs={1}><Search /></Col>
+         </div>
+
+        <div className="row">
+            <div className="Horizontal-list-container">
+                <ListGroup horizontal className="scrollable-list">
+                    {
+                        displayCategories?.map((category, index) => (
+                            <ListGroupItem key={category.categoryId}
+                                           className={"my-list-item " + (selectedCategoryInd === index ? "list-group-item active" : "list-group-item")}
+                                           onClick={() => {
+                                               setSelectedCategoryInd(index)
+                                               onSelect(category);
+                                           }
+                                           }>{category.categoryName}</ListGroupItem>
+                        ))
+                    }
+                </ListGroup>
             </div>
-            {filterValue &&
-                <div className="col-1  p-0">
-                    <Button variant="link"
-                        onClick={() => handleClearFilter()}
-                        aria-label="Clear search"
-                        className="p-0">
-                            <X size={18} />
-                    </Button>
-                </div>
-            }
         </div>
-        <ul className="list-group row p-3">
-            {
-                displayCategories?.map((category, index) => (
-                    <li key={category.categoryId}
-                        className={selectedCategoryInd === index ? "list-group-item active" : "list-group-item"}
-                        onClick={() => {
-                            setSelectedCategoryInd(index)
-                            onSelect(category);
-                        }
-                        }>{category.categoryName}</li>
-                ))
-            }
-        </ul>
     </div>
 });
 

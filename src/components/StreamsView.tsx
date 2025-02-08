@@ -1,9 +1,10 @@
 import {Category, Source, Stream} from "../types/Types.ts";
 import {useEffect, useState} from "react";
 import {getStreams} from "../api/xtreamCodesApi.ts";
-import {Button, Form} from "react-bootstrap";
+import {Button, Card, Col, Form, Row} from "react-bootstrap";
 import * as React from "react";
-import {X} from "react-bootstrap-icons";
+import {Search, X} from "react-bootstrap-icons";
+import '../css/streams.css';
 
 type StreamsViewProps = {
     source: Source | null;
@@ -18,6 +19,7 @@ function StreamsView ({category, source, onSelect}: StreamsViewProps) {
     const [selectedStreamInd, setSelectedStreamInd] = useState(-1);
     const [filterValue, setFilterValue] = useState('');
     const [displayStreams, setDisplayStreams] = useState<Stream[]>();
+    const [hoveredStreamInd, setHoveredStreamInd] = useState(-1);
 
     useEffect(() => {
         console.log("loading category streams...");
@@ -77,11 +79,12 @@ function StreamsView ({category, source, onSelect}: StreamsViewProps) {
                     </div>
                 </>}
         </div>
-        <div className="row p-10">
-            <div className="col-11 p-10">
+        <div className="row p-10 flex-box justify-content-center">
+            <Col xs={2}><h4>Channels</h4></Col>
+            <Col xs={2} className="p-10">
                 <Form.Control type="text" placeholder="Search channel" value={filterValue}
                               onChange={(event) => handleSearch(event)}/>
-            </div>
+            </Col>
             {filterValue &&
                 <div className="col-1  p-0">
                     <Button variant="link"
@@ -92,20 +95,25 @@ function StreamsView ({category, source, onSelect}: StreamsViewProps) {
                     </Button>
                 </div>
             }
+            <Col xs={1}><Search /></Col>
         </div>
-        <ul className="list-group p-3">
-            {
-                displayStreams?.map((stream, index) => (
-                    <li key={stream.streamId}
-                        className={selectedStreamInd === index ? "list-group-item active" : "list-group-item"}
-                        onClick={() => {
-                            setSelectedStreamInd(index);
-                            onSelect(stream);
-                        }
-                        }><img src={stream.streamIcon} alt={''} height={25} width={25}/> {stream.name}</li>
-                ))
-            }
-        </ul>
+        <Row className="vh-100 g-4 mt-3 vertical-scroll"> {/* g-4 adds spacing between grid items */}
+            {displayStreams?.map((stream, index) => (
+                <Col key={stream.streamId} xs={12} sm={6} md={4} lg={3}>
+                    <Card className={`h-100 ${(selectedStreamInd === index || hoveredStreamInd == index)? "border-primary shadow-lg" : "border-light"}`}
+                          onClick={() => {
+                             onSelect(stream);
+                          }}
+                            onMouseEnter={() => {setHoveredStreamInd(index)}}
+                            onMouseLeave={() => {setHoveredStreamInd(-1)}}
+                          >
+                        <Card.Body>
+                            <Card.Body><img src={stream.streamIcon} alt={''} height={25} width={25}/> {stream.name}</Card.Body>
+                        </Card.Body>
+                    </Card>
+                </Col>
+            ))}
+        </Row>
     </div>
 }
 export default StreamsView;

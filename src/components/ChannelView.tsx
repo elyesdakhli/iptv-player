@@ -1,12 +1,14 @@
 import {Source, Stream} from "../types/Types.ts";
 import {useEffect, useState} from "react";
 import ReactPlayer from "react-player";
+import {Button, Col, Row} from "react-bootstrap";
 
 type ChannelViewProps = {
     source: Source | null;
     stream: Stream | null;
+    onCancelPlay: () => void;
 }
-function ChannelView({source, stream}: ChannelViewProps){
+function ChannelView({source, stream, onCancelPlay}: ChannelViewProps){
 
     const [streamUrl, setStreamUrl] = useState<string>('');
     useEffect(()=> {
@@ -20,26 +22,33 @@ function ChannelView({source, stream}: ChannelViewProps){
 
 
     return <>
-        { source && stream?.streamId &&
-            <div className="p-50 text-center">
-                <h4><img src={stream.streamIcon} alt={''} height={25} width={25}/> {stream.name}</h4>
-                <ReactPlayer
-                    url={streamUrl} // Supports HLS, DASH, etc.
-                    controls
-                    playing // Auto-play (may require `muted` due to browser policies)
-                    width="100%"
-                    height="auto"
-                    config={{
-                        file: {
-                            forceHLS: true, // Force HLS.js for broader compatibility
-                            hlsOptions: {
-                                maxBufferSize: 10 * 1000 * 1000, // Adjust buffer size if needed
-                            },
-                        },
-                    }}
-                    onError={(error) => console.log(error)}
-                />
-            </div>
+        { source && stream?.streamId && (
+            <>
+                <Row className="justify-content-center g-2">
+                    <Col xs={1}><Button onClick={onCancelPlay} variant="secondary">Back</Button></Col>
+                    <Col><h4><img src={stream.streamIcon} alt={''} height={25} width={25}/> {stream.name}</h4></Col>
+                </Row>
+                <Row className="justify-content-center mt-3">
+                    <Col xs={12} sm={10} md={8} lg={6}>
+                        <ReactPlayer
+                            url={streamUrl} // Supports HLS, DASH, etc.
+                            controls
+                            playing // Auto-play (may require `muted` due to browser policies)
+                            width="100%"
+                            height="auto"
+                            config={{
+                                file: {
+                                    forceHLS: true, // Force HLS.js for broader compatibility
+                                    hlsOptions: {
+                                        maxBufferSize: 10 * 1000 * 1000, // Adjust buffer size if needed
+                                    },
+                                },
+                            }}
+                            onError={(error) => console.log(error)}
+                        />
+                    </Col>
+                </Row>
+            </>)
     }</>
 }
 export default ChannelView;

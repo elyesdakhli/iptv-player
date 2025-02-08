@@ -5,7 +5,7 @@ import {Category, Stream} from "./types/Types.ts";
 import {useRef, useState} from "react";
 import ChannelView from "./components/ChannelView.tsx";
 import {storageApi} from "./api/storageApi.ts";
-import {Alert} from "react-bootstrap";
+import {Alert, Row} from "react-bootstrap";
 
 function App() {
     const [selectedCategory, setSelectedCategory] = useState<Category|null>(null);
@@ -33,39 +33,37 @@ function App() {
         setActiveSource(storageApi.getActiveSource());
     }
 
+    const handleCancelPlay = () => {
+        handleSelectStream(null);
+    }
+
     return (
-      <>
-          <h1 className="text-center">Iptv player</h1>
-          <hr/>
-          <div className="container-fluid p-10">
-                <div className="row">
-                  <SourcesView source={activeSource} onClearData={handleClearData} onSourcesChanged={handleSourceChanged}/>
-                </div>
+        <>
+            <h1 className="text-center">Iptv player</h1>
+            <hr/>
+            <div className="container-fluid p-10">
+                <Row>
+                    <SourcesView source={activeSource} onClearData={handleClearData} onSourcesChanged={handleSourceChanged}/>
+                </Row>
                 <hr />
-              {!activeSource && (
-                  <Alert variant='warning'>No Active source found.</Alert>
-              )}
-              {activeSource &&(
-                <div className="row">
-                    <div className="col-md-2 section d-flex flex-column vh-100">
-                        <header><h4>Categories</h4></header>
-                        <div className="flex-grow-1 overflow-auto">
+                {!activeSource && (
+                    <Alert variant='warning'>No Active source found.</Alert>
+                )}
+                {activeSource &&(
+                    <>
+                        <Row hidden={selectedStream != null}>
                             <CategoriesView source={activeSource} onSelect={handleSelectCategory} ref={categoriesView}/>
-                        </div>
-                    </div>
-                    <div className="col-md-3 section d-flex flex-column vh-100">
-                        <header><h4>Channels</h4></header>
-                      <div className="flex-grow-1 overflow-auto">
-                        <StreamsView source={activeSource} category={selectedCategory} onSelect={handleSelectStream}/>
-                      </div>
-                    </div>
-                    <div className="col-md-7 section">
-                      <ChannelView source={activeSource} stream={selectedStream}/>
-                    </div>
-                </div>
-              )}
-          </div>
-      </>
+                        </Row>
+                        <Row className="mt-5" hidden={selectedStream != null}>
+                            <StreamsView source={activeSource} category={selectedCategory} onSelect={handleSelectStream}/>
+                        </Row>
+                        <Row>
+                            <ChannelView source={activeSource} stream={selectedStream} onCancelPlay={handleCancelPlay}/>
+                        </Row>
+                    </>
+                )}
+            </div>
+        </>
   )
 }
 
