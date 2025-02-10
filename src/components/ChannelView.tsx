@@ -1,15 +1,15 @@
-import {Source, Stream} from "../types/Types.ts";
-import {useEffect, useState} from "react";
+import {Stream} from "../types/Types.ts";
+import {useContext, useEffect, useState} from "react";
 import ReactPlayer from "react-player";
 import {Button, Col, Row} from "react-bootstrap";
+import {SourceContext} from "../context/SourceContext.ts";
 
 type ChannelViewProps = {
-    source: Source | null;
     stream: Stream | null;
     onCancelPlay: () => void;
 }
-function ChannelView({source, stream, onCancelPlay}: ChannelViewProps){
-
+function ChannelView({stream, onCancelPlay}: ChannelViewProps){
+    const source = useContext(SourceContext);
     const [streamUrl, setStreamUrl] = useState<string>('');
     useEffect(()=> {
         if(!source || !stream)

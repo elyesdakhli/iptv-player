@@ -1,16 +1,17 @@
-import {useEffect, useState} from "react";
-import {Button} from "react-bootstrap";
-import {GlobalInfos, Source} from "../types/Types.ts";
+import {useContext, useEffect, useState} from "react";
+import {Button, Col} from "react-bootstrap";
+import {GlobalInfos} from "../types/Types.ts";
 import {connect} from "../api/xtreamCodesApi.ts";
 import {SourcesManager} from "./SourcesManager.tsx";
+import {SourceContext} from "../context/SourceContext.ts";
 
 export type SourceViewProps = {
-    source: Source | null,
     onClearData: () => void,
     onSourcesChanged: () => void
 }
 
-function SourcesView ({source, onClearData, onSourcesChanged}: SourceViewProps) {
+function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
+    const source = useContext(SourceContext);
     const [globalInfos, setGlobalInfos] = useState<GlobalInfos | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [apiError, setApiError] = useState<Error|null>(null);
@@ -38,7 +39,6 @@ function SourcesView ({source, onClearData, onSourcesChanged}: SourceViewProps) 
     }
 
     return <>
-        <h4>Sources</h4>
         {loading &&
             <>
                 <div className="spinner-border" role="status">
@@ -51,28 +51,29 @@ function SourcesView ({source, onClearData, onSourcesChanged}: SourceViewProps) 
                     Error while getting user and server information.
                 </div>
             </>}
-        <div className="row">
+        <>
             {source && (
-                <>
-                    <span className="col-md"><strong>Url: </strong>{source?.url}</span>
-                    <span className="col-md"><strong>User: </strong>{source?.username}</span>
-                </>
+                <Col><strong>Source: </strong>{source.name}</Col>
+
             )}
             {globalInfos &&
                 <>
-                    <span className={"col-md"}><strong>Status: </strong><span className=
+                    <Col><strong>Status: </strong><span className=
                                                          {globalInfos?.userInfo.status === 'Active' ?
-                                                             "text-success" : 'text-warning'}>{globalInfos?.userInfo.status}</span></span>
-                    <span className="col-md"><strong>Expires on: </strong>{formatDate(globalInfos?.userInfo.expDate) }</span>
+                                                             "text-success" : 'text-warning'}>{globalInfos?.userInfo.status}</span></Col>
+                    <Col><strong>Expires on: </strong>{formatDate(globalInfos?.userInfo.expDate) }</Col>
                 </>
             }
-            <div className="col-sm-1">
-                <SourcesManager onSourcesChanged={onSourcesChanged}/>
-            </div>
-            {source && (
-                <Button className="col-md-1" variant="danger" onClick={onClearData} size="sm" style={{ cursor: "pointer" }}>Clear & Reload</Button>
-            )}
-        </div>
+            <Col>
+                <span className="me-1">
+                    <SourcesManager onSourcesChanged={onSourcesChanged}/>
+                </span>
+                {source && (
+                    <Button variant="danger" onClick={onClearData} style={{ cursor: "pointer" }}>Clear & Reload</Button>
+                )}
+            </Col>
+
+        </>
     </>
 }
 export default SourcesView;

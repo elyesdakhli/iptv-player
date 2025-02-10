@@ -1,18 +1,19 @@
-import {Category, Source, Stream} from "../types/Types.ts";
-import {useEffect, useState} from "react";
+import {Category, Stream} from "../types/Types.ts";
+import {useContext, useEffect, useState} from "react";
 import {getStreams} from "../api/xtreamCodesApi.ts";
 import {Button, Card, Col, Form, Row} from "react-bootstrap";
 import * as React from "react";
 import {Search, X} from "react-bootstrap-icons";
 import '../css/streams.css';
+import {SourceContext} from "../context/SourceContext.ts";
 
 type StreamsViewProps = {
-    source: Source | null;
     category: Category | null;
     onSelect: (stream : Stream) => void;
 }
 
-function StreamsView ({category, source, onSelect}: StreamsViewProps) {
+function StreamsView ({category, onSelect}: StreamsViewProps) {
+    const source = useContext(SourceContext);
     const [loading, setLoading] = useState(true);
     const [apiError, setApiError] = useState<Error|null>(Error);
     const [streams, setStreams] = useState<Stream[]>()
@@ -22,7 +23,6 @@ function StreamsView ({category, source, onSelect}: StreamsViewProps) {
     const [hoveredStreamInd, setHoveredStreamInd] = useState(-1);
 
     useEffect(() => {
-        console.log("loading category streams...");
         if(!source || !category)
             return;
         setLoading(true);

@@ -65,6 +65,7 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
         setFormData(EMPTY_SOURCE);
         setCreateSourceError('');
         setShowSourceForm(false);
+        setSources(loadSourcesFromCache());
         onSourcesChanged();
     }
 
