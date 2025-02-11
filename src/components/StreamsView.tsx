@@ -6,6 +6,7 @@ import * as React from "react";
 import {Search, X} from "react-bootstrap-icons";
 import '../css/streams.css';
 import {SourceContext} from "../context/SourceContext.ts";
+import {ModeContext} from "../context/ModeContext.ts";
 
 type StreamsViewProps = {
     category: Category | null;
@@ -14,6 +15,7 @@ type StreamsViewProps = {
 
 function StreamsView ({category, onSelect}: StreamsViewProps) {
     const source = useContext(SourceContext);
+    const mode = useContext(ModeContext);
     const [loading, setLoading] = useState(true);
     const [apiError, setApiError] = useState<Error|null>(Error);
     const [streams, setStreams] = useState<Stream[]>()
@@ -27,7 +29,7 @@ function StreamsView ({category, onSelect}: StreamsViewProps) {
             return;
         setLoading(true);
         setApiError(null);
-        getStreams(source, category)
+        getStreams(source, category, mode)
             .then(result => {
                 setStreams(result)
                 setDisplayStreams(result);
@@ -38,6 +40,7 @@ function StreamsView ({category, onSelect}: StreamsViewProps) {
 
     useEffect(() => {
         setSelectedStreamInd(-1);
+        setFilterValue('');
     }, [category]);
 
     function filterStreams(searchValue: string, streams: Stream[]) {
@@ -98,7 +101,7 @@ function StreamsView ({category, onSelect}: StreamsViewProps) {
             <Col xs={1}><Search /></Col>
         </div>
         <Row className="vh-100 g-4 mt-3 vertical-scroll"> {/* g-4 adds spacing between grid items */}
-            {displayStreams?.map((stream, index) => (
+            {displayStreams?.slice(0, 500).map((stream, index) => (
                 <Col key={stream.streamId} xs={12} sm={6} md={4} lg={3}>
                     <Card className={`h-100 ${(selectedStreamInd === index || hoveredStreamInd == index)? "border-primary shadow-lg" : "border-light"}`}
                           onClick={() => {

@@ -1,29 +1,29 @@
-import {useContext, useEffect, useState} from "react";
+import {useEffect, useState} from "react";
 import {Button, Col} from "react-bootstrap";
 import {GlobalInfos} from "../types/Types.ts";
 import {connect} from "../api/xtreamCodesApi.ts";
 import {SourcesManager} from "./SourcesManager.tsx";
-import {SourceContext} from "../context/SourceContext.ts";
+import {useActiveSource} from "../hooks/useActiveSource.ts";
 
 export type SourceViewProps = {
-    onClearData: () => void,
-    onSourcesChanged: () => void
+    onClearData: (() => void) | undefined;
+    onSourcesChanged: (() => void) | undefined;
 }
 
 function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
-    const source = useContext(SourceContext);
+    const { activeSource } = useActiveSource();
     const [globalInfos, setGlobalInfos] = useState<GlobalInfos | null>(null);
     const [loading, setLoading] = useState<boolean>(false);
     const [apiError, setApiError] = useState<Error|null>(null);
 
     useEffect(() => {
-        if(!source){
+        if(!activeSource){
             setGlobalInfos(null);
             return;
         }
         console.log("getting global information");
         setLoading(true);
-        connect(source)
+        connect(activeSource)
             .then(result => {
                 setGlobalInfos(result);
                 setApiError(null);
@@ -32,7 +32,7 @@ function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
             .finally(() => {
                 setLoading(false);
             });
-    }, [source]);
+    }, [activeSource]);
 
     const formatDate = (expDate: number): string => {
         return new Date(expDate * 1_000).toLocaleDateString();
@@ -52,8 +52,8 @@ function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
                 </div>
             </>}
         <>
-            {source && (
-                <Col><strong>Source: </strong>{source.name}</Col>
+            {activeSource && (
+                <Col><strong>Source: </strong>{activeSource.name}</Col>
 
             )}
             {globalInfos &&
@@ -68,7 +68,7 @@ function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
                 <span className="me-1">
                     <SourcesManager onSourcesChanged={onSourcesChanged}/>
                 </span>
-                {source && (
+                {activeSource && (
                     <Button variant="danger" onClick={onClearData} style={{ cursor: "pointer" }}>Clear & Reload</Button>
                 )}
             </Col>

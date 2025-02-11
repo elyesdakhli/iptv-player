@@ -1,4 +1,4 @@
-import {Category, Source} from "../types/Types.ts";
+import {AppMode, Category, Source} from "../types/Types.ts";
 
 const STORAGE: Storage = localStorage;
 const SOURCE_STORAGE_KEY = 'sources';
@@ -15,11 +15,11 @@ export const get = <S>(key: string): S => {
 
 export const clean = (key: string) => STORAGE.removeItem(key);
 
-export const getCategories = (sourceName: string): Category[] =>
-    get<Category[]>(`${sourceName}${CATEGORY_KEY_POSTFIX}`);
+export const getCategories = (sourceName: string, mode: AppMode): Category[] =>
+    get<Category[]>(`${sourceName}${CATEGORY_KEY_POSTFIX}_${mode}`);
 
-export const saveCategories = (sourceName: string, categories: Category[]): void =>
-    save(`${sourceName}${CATEGORY_KEY_POSTFIX}`, categories);
+export const saveCategories = (sourceName: string, mode: AppMode, categories: Category[]): void =>
+    save(`${sourceName}${CATEGORY_KEY_POSTFIX}_${mode}`, categories);
 
 
 export const saveSource = (source: Source) => {

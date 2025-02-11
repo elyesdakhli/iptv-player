@@ -29,7 +29,7 @@ function ChannelView({stream, onCancelPlay}: ChannelViewProps){
                     <Col><h4><img src={stream.streamIcon} alt={''} height={25} width={25}/> {stream.name}</h4></Col>
                 </Row>
                 <Row className="justify-content-center mt-3">
-                    <Col xs={12} sm={10} md={8} lg={6}>
+                    <Col xs={12} sm={10}>
                         <ReactPlayer
                             url={streamUrl} // Supports HLS, DASH, etc.
                             controls

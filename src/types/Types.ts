@@ -1,11 +1,12 @@
-
+export type AppMode = 'TV' | 'FILMS' | 'SERIES';
 export type Source = {
-    name: string;
-    url: string;
-    username: string;
-    password: string;
-    type: 'XTREAM_CODES' | 'PLAYLIST';
-    active: boolean;
+    name: string,
+    url: string,
+    username: string,
+    password: string,
+    type: 'XTREAM_CODES' | 'PLAYLIST',
+    active: boolean,
+    activeSource?: Source | null
 }
 
 export type Category = {
