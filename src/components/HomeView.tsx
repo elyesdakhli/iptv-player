@@ -1,12 +1,11 @@
 import {Alert, Row} from "react-bootstrap";
-import CategoriesView, {CategoriesRef} from "./CategoriesView.tsx";
+import {CategoriesRef, CategoriesView} from "./CategoriesView.tsx";
 import StreamsView from "./StreamsView.tsx";
 import ChannelView from "./ChannelView.tsx";
-import {AppMode, Category, Stream} from "../types/Types.ts";
-import {forwardRef, Ref, useContext, useImperativeHandle, useRef, useState} from "react";
+import {Category, Stream} from "../types/Types.ts";
+import {forwardRef, Ref, useImperativeHandle, useRef, useState} from "react";
 import {SourceContext} from "../context/SourceContext.ts";
 import {useActiveSource} from "../hooks/useActiveSource.ts";
-import {ModeContext} from "../context/ModeContext.ts";
 
 export type HomeRefs = {
     handleClearData: () => void;
@@ -14,13 +13,12 @@ export type HomeRefs = {
 }
 export const HomeView = forwardRef((_: {}, ref: Ref<HomeRefs>) => {
 
-    const mode = useContext<AppMode>(ModeContext);
-    console.log("HomeView rendered with mode " + mode);
+    const {activeSource, loadActiveSource} = useActiveSource();
+
     const [selectedCategory, setSelectedCategory] = useState<Category|null>(null);
     const [selectedStream, setSelectedStream] = useState<Stream|null>(null);
     const categoriesViewRef = useRef<CategoriesRef>(null);
 
-    const {activeSource, loadActiveSource} = useActiveSource();
 
     const handleSelectCategory = (category: Category | null) => {
         setSelectedCategory(category);
@@ -61,7 +59,7 @@ export const HomeView = forwardRef((_: {}, ref: Ref<HomeRefs>) => {
                     <Row hidden={selectedStream != null}>
                         <CategoriesView onSelect={handleSelectCategory} ref={categoriesViewRef}/>
                     </Row>
-                    <Row className="mt-5" hidden={selectedStream != null}>
+                    <Row className="" hidden={selectedStream != null}>
                         <StreamsView category={selectedCategory} onSelect={handleSelectStream}/>
                     </Row>
                     <Row>

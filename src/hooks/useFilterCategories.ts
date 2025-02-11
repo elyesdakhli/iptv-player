@@ -3,7 +3,7 @@ import {useEffect, useState} from "react";
 
 export const useFilterCategories = (categories: Category[]) => {
     const [filterValue, setFilterValue] = useState('');
-    const [displayCategories, setDisplayCategories] = useState<Category[]>(categories);
+    const [filteredCategories, setFilteredCategories] = useState<Category[]>(categories);
 
     const filterCategories = (filter: string, categories: Category[]): Category[] => {
         return (!filter || filter === '') ?
@@ -23,8 +23,8 @@ export const useFilterCategories = (categories: Category[]) => {
     }
 
     useEffect(() => {
-        setDisplayCategories(filterCategories(filterValue, categories));
+        setFilteredCategories(filterCategories(filterValue, categories));
     }, [filterValue, categories]);
 
-    return {displayCategories, search, clearSearch};
+    return {filteredCategories: filteredCategories, search, clearSearch};
 }

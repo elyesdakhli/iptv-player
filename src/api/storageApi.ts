@@ -53,7 +53,7 @@ export const deleteSource = (sourceName: string): Source[] => {
 
 export const getSources = ():Source[] => get<Source[]>(SOURCE_STORAGE_KEY);
 
-export const cleanCategories = (name: string) => clean(`${name}${CATEGORY_KEY_POSTFIX}`);
+export const cleanCategories = (name: string, mode: AppMode) => clean(`${name}${CATEGORY_KEY_POSTFIX}_${mode}`);
 
 export const storageApi = {
     get,

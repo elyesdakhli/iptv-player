@@ -1,13 +1,15 @@
-import {forwardRef, Ref, useContext, useEffect, useImperativeHandle, useState} from "react";
+import {forwardRef, Ref, useContext, useImperativeHandle, useState} from "react";
 import {Category} from "../types/Types.ts";
-import {Button, Col, Form, ListGroup, ListGroupItem} from "react-bootstrap";
-import {Search, X} from 'react-bootstrap-icons';
+import {Col, ListGroup, ListGroupItem, Row} from "react-bootstrap";
 import {storageApi} from "../api/storageApi.ts";
 import '../css/categories.css';
 import {SourceContext} from "../context/SourceContext.ts";
 import {useFetchCategories} from "../hooks/useFetchCategories.ts";
 import {useFilterCategories} from "../hooks/useFilterCategories.ts";
 import {ModeContext} from "../context/ModeContext.ts";
+import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
+import {ErrorAlert} from "./common/ErrorAlert.tsx";
+import {SearchBar} from "./common/SearchBar.tsx";
 
 export type CategoryViewProps = {
     onSelect: (category: Category) => void;
@@ -19,33 +21,19 @@ export type CategoriesRef = {
 
 const ALL_CHANNELS_CAT: Category = {categoryId: 'ALL', categoryName: 'All', parentId: ''};
 
-const CategoriesView = forwardRef(({ onSelect }: CategoryViewProps, ref: Ref<CategoriesRef>) => {
+export const CategoriesView = forwardRef(({ onSelect }: CategoryViewProps, ref: Ref<CategoriesRef>) => {
+
+    const {categories, loading, apiError, reFetchCategories: reFetchCategories} = useFetchCategories(ALL_CHANNELS_CAT);
+    const {filteredCategories, search} = useFilterCategories(categories);
+    //Contexts
     const source = useContext(SourceContext);
     const mode = useContext(ModeContext);
-    console.log("CategoriesView rendered with source " + source?.name + ' and mode ' + mode);
-    const onFetchComplete = () => {
-        setSelectedCategoryInd(-1);
-        setFilterValue('');
-        clearSearch();
-    }
-    const [filterValue, setFilterValue] = useState('');
-    const {categories, loading, apiError, refetchCategories} = useFetchCategories(onFetchComplete);
-    console.log("CategoriesView categories: " + (categories? categories[0]?.categoryName: ''));
-
-    const [allCategories, setAllCategories] = useState<Category[]>([]);
-    useEffect(() => {
-        setAllCategories([ALL_CHANNELS_CAT, ...categories]);
-    }, [categories, mode]);
-
-    const {displayCategories, search, clearSearch} = useFilterCategories(allCategories);
-
-    const [selectedCategoryInd, setSelectedCategoryInd] = useState(-1);
 
     const handleClearData= () => {
         if(!source)
             return
-        storageApi.cleanCategories(source.name);
-        refetchCategories(mode);
+        storageApi.cleanCategories(source.name, mode);
+        reFetchCategories(mode);
     }
 
     useImperativeHandle(ref, () => ({
@@ -57,61 +45,36 @@ const CategoriesView = forwardRef(({ onSelect }: CategoryViewProps, ref: Ref<Cat
 
     return (
         <div className="container">
-            <div className="row">
-                {loading && (
-                    <div className="spinner-border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
-                )}
-                {apiError && (
-                    <div className="alert alert-danger" role="alert">
-                        Error while getting categories list.
-                    </div>
-                )}
-            </div>
-            <div className="row p-10 mb-2 flex-box justify-content-center">
+            <Row>
+                <LoadingSpinner visible={loading}/>
+                <ErrorAlert error={apiError}/>
+            </Row>
+            <Row className="p-10 mb-2 flex-box justify-content-center">
                 <Col xs={2}><h4>Categories</h4></Col>
-                <Col xs={2} className="p-10">
-                    <Form.Control type="text" placeholder="Search category" value={filterValue}
-                                  onChange={(event) => {
-                                      setFilterValue(event.target.value);
-                                      search(event.target.value);
-                                  }}/>
-                </Col>
-                <Col xs={1} className="p-0">
-                    {filterValue && (
-                        <Button variant="link"
-                                onClick={() => {
-                                    setFilterValue('');
-                                    clearSearch();
-                                }}
-                                aria-label="Clear search"
-                                className="p-0">
-                            <X size={18} />
-                        </Button>
-                    )}
-                </Col>
-                <Col xs={1}><Search /></Col>
-            </div>
-
-            <div className="row">
-                <div className="Horizontal-list-container">
-                    <ListGroup horizontal className="scrollable-list">
-                        {displayCategories?.map((category, index) => (
-                            <ListGroupItem key={category.categoryId}
-                                           className={"my-list-item " + (selectedCategoryInd === index ? "list-group-item active" : "list-group-item")}
-                                           onClick={() => {
-                                               setSelectedCategoryInd(index);
-                                               onSelect(category);
-                                           }}>
-                                {category.categoryName}
-                            </ListGroupItem>
-                        ))}
-                    </ListGroup>
-                </div>
-            </div>
+                <SearchBar searchPlaceHolder="Search category" searchFn={search}/>
+            </Row>
+            <Row className="Horizontal-list-container">
+                <CategoryItems categories={filteredCategories} onSelect={onSelect} />
+            </Row>
         </div>
     );
 });
 
-export default CategoriesView;
+const CategoryItems = ({categories, onSelect}: {categories: Category[], onSelect: (category: Category) => void}) => {
+    const [selectedCategoryInd, setSelectedCategoryInd] = useState(-1);
+
+    return (
+        <ListGroup horizontal className="scrollable-list p-2">
+            {categories?.map((category, index) => (
+                <ListGroupItem key={category.categoryId}
+                               className={"my-list-item " + (selectedCategoryInd === index ? "list-group-item active" : "list-group-item")}
+                               onClick={() => {
+                                   setSelectedCategoryInd(index);
+                                   onSelect(category);
+                               }}>
+                    {category.categoryName}
+                </ListGroupItem>
+            ))}
+        </ListGroup>
+    )
+}

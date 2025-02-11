@@ -5,7 +5,7 @@ import {storageApi} from "../api/storageApi.ts";
 import {AppMode, Category} from "../types/Types.ts";
 import {ModeContext} from "../context/ModeContext.ts";
 
-export const useFetchCategories = (onFetchComplete: (categories: Category[]) => void) => {
+export const useFetchCategories = (...staticCategories: Category[]) => {
     const source = useContext(SourceContext);
     const mode = useContext(ModeContext);
     console.log('useFetchCategories rendered for mode ' + mode);
@@ -13,6 +13,9 @@ export const useFetchCategories = (onFetchComplete: (categories: Category[]) => 
     const [loading, setLoading] = useState(true);
     const [apiError, setApiError] = useState<Error|null>(Error);
 
+    const appendCategories = (categories: Category[], append: Category[]): Category[] => {
+        return [...categories, ...append];
+    }
 
     const fetchFromApi = () => {
         if(!source)
@@ -21,10 +24,9 @@ export const useFetchCategories = (onFetchComplete: (categories: Category[]) => 
         setApiError(null);
         getCategories(source, mode)
             .then(categoriesData => {
-                setCategories(categoriesData);
+                setCategories(appendCategories(staticCategories, categoriesData));
                 storageApi.saveCategories(source.name, mode, categoriesData);
                 console.log("Categories loaded from api.");
-                onFetchComplete(categories);
             })
             .catch( (error) => setApiError(error))
             .finally( () => setLoading(false));
@@ -37,11 +39,12 @@ export const useFetchCategories = (onFetchComplete: (categories: Category[]) => 
 
         if(!localStorageCategories)
             return [];
-        setCategories(localStorageCategories);
+        const result = appendCategories(staticCategories, localStorageCategories);
+        setCategories(result);
         setApiError(null);
         setLoading(false);
         console.log("Categories loaded from cache for mode " + mode);
-        return localStorageCategories;
+        return result;
 
     }
 
@@ -61,5 +64,5 @@ export const useFetchCategories = (onFetchComplete: (categories: Category[]) => 
         doFetch(mode);
     }, [source, mode, doFetch]);
 
-    return {categories, loading, apiError, refetchCategories: doFetch};
+    return {categories, loading, apiError, reFetchCategories: doFetch};
 }
