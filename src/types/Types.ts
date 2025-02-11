@@ -1,11 +1,12 @@
-
+export type AppMode = 'TV' | 'FILMS' | 'SERIES';
 export type Source = {
-    name: string;
-    url: string;
-    username: string;
-    password: string;
-    type: 'XTREAM_CODES' | 'PLAYLIST';
-    active: boolean;
+    name: string,
+    url: string,
+    username: string,
+    password: string,
+    type: 'XTREAM_CODES' | 'PLAYLIST',
+    active: boolean,
+    activeSource?: Source | null
 }
 
 export type Category = {
@@ -30,6 +31,14 @@ export type Stream = {
     directSource: string;
     tvArchiveDuration: number
 };
+
+export type VodStream = Stream &{
+    rating: string,
+    ratingFiveBased: string,
+    tmdb: string,
+    trailer: string,
+    containerExtension: string
+}
 
 export type UserInfo = {
     username: string;

@@ -16,7 +16,7 @@ const EMPTY_SOURCE: Source = {
 
 const EMPTY_SOURCES: Source[] = [];
 type SourcesManagerProps = {
-    onSourcesChanged: () => void
+    onSourcesChanged: (() => void) | undefined
 }
 export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
     const loadSourcesFromCache= () => storageApi.getSources() || EMPTY_SOURCES;
@@ -65,7 +65,9 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
         setFormData(EMPTY_SOURCE);
         setCreateSourceError('');
         setShowSourceForm(false);
-        onSourcesChanged();
+        setSources(loadSourcesFromCache());
+        if(onSourcesChanged)
+            onSourcesChanged();
     }
 
     const deleteSource = () => {
@@ -75,7 +77,8 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
         storageApi.cleanCategories(formData.name);
         setFormData(EMPTY_SOURCE);
         setShowSourceForm(false);
-        onSourcesChanged();
+        if(onSourcesChanged)
+            onSourcesChanged();
     }
 
     return <>
@@ -134,7 +137,7 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
                                     </FormGroup>
                                 </div>
                                 <div className="row mt-3 justify-content-center">
-                                    <Button className="col-md-3 mx-1" variant="primary" disabled={!formRef.current?.checkValidity()} type="submit">{editMode ? 'Add' : 'Save'}</Button>
+                                    <Button className="col-md-3 mx-1" variant="primary" disabled={!formRef.current?.checkValidity()} type="submit">{!editMode ? 'Add' : 'Save'}</Button>
                                     <Button className="col-md-3 mx-1" variant="dark" onClick={()=> setShowSourceForm(false)}>Cancel</Button>
                                     <Button className="col-md-3 mx-1" variant="danger" disabled={!editMode} onClick={deleteSource}>Delete</Button>
                                 </div>

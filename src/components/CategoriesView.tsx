@@ -1,13 +1,17 @@
-import {forwardRef, Ref, useEffect, useImperativeHandle, useState} from "react";
-import {Category, Source} from "../types/Types.ts";
-import {Button, Form} from "react-bootstrap";
-import { X } from 'react-bootstrap-icons';
-import * as React from "react";
-import {getCategories} from "../api/xtreamCodesApi.ts";
+import {forwardRef, Ref, useContext, useImperativeHandle, useState} from "react";
+import {Category} from "../types/Types.ts";
+import {Col, ListGroup, ListGroupItem, Row} from "react-bootstrap";
 import {storageApi} from "../api/storageApi.ts";
+import '../css/categories.css';
+import {SourceContext} from "../context/SourceContext.ts";
+import {useFetchCategories} from "../hooks/useFetchCategories.ts";
+import {useFilterCategories} from "../hooks/useFilterCategories.ts";
+import {ModeContext} from "../context/ModeContext.ts";
+import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
+import {ErrorAlert} from "./common/ErrorAlert.tsx";
+import {SearchBar} from "./common/SearchBar.tsx";
 
 export type CategoryViewProps = {
-    source: Source | null;
     onSelect: (category: Category) => void;
 }
 
@@ -15,85 +19,21 @@ export type CategoriesRef = {
     handleClearData: () => void;
 }
 
-const CategoriesView = forwardRef(({source, onSelect}: CategoryViewProps, ref: Ref<CategoriesRef>) => {
-    const [loading, setLoading] = useState(true);
-    const [apiError, setApiError] = useState<Error|null>(Error);
-    const [selectedCategoryInd, setSelectedCategoryInd] = useState(-1);
-    const [categories, setCategories] = useState<Category[]>([]);
-    const [filterValue, setFilterValue] = useState<string>('');
-    const [displayCategories, setDisplayCategories] = useState<Category[]>();
+const ALL_CHANNELS_CAT: Category = {categoryId: 'ALL', categoryName: 'All', parentId: ''};
 
-    const initFromApi = () => {
-        if(!source)
-            return;
-        setLoading(true);
-        setApiError(null);
-        getCategories(source)
-            .then(categoriesData => {
-                setSelectedCategoryInd(-1);
-                setDisplayCategories(categoriesData);
-                setCategories(categoriesData);
-                setFilterValue('');
-                storageApi.saveCategories(source.name, categoriesData);
-                console.log("Categories loaded from api.");
-            })
-            .catch( (error) => setApiError(error))
-            .finally( () => setLoading(false));
-    }
+export const CategoriesView = forwardRef(({ onSelect }: CategoryViewProps, ref: Ref<CategoriesRef>) => {
 
-    const initFromCache = (): boolean => {
-        if(!source)
-            return false;
-        const localStorageCategories = storageApi.getCategories(source.name)
-        if(localStorageCategories?.length>0){
-            setCategories(localStorageCategories);
-            setDisplayCategories(localStorageCategories);
-            setApiError(null);
-            setLoading(false);
-            setFilterValue('');
-            console.log("Categories loaded from cache.");
-            return true;
-        }
-        return false;
-    }
-
-    useEffect(() => {
-        if(!source)
-            return;
-        //Getting categories from cache (localstorage)
-        if(initFromCache())
-            return;
-        //Getting categories from api
-        initFromApi();
-    }, [source]);
-
-
-    const filterCategories = (filter: string, categories: Category[]): Category[] => {
-        return (!filter || filter === '') ?
-            categories :
-            categories
-                .filter(cat => cat.categoryName.toLowerCase().includes(filter.toLowerCase()))
-    }
-
-    function handleSearch(event: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) {
-        if(!categories)
-            return;
-        const searchValue = event.target.value;
-        setFilterValue(searchValue);
-        setDisplayCategories(filterCategories(searchValue, categories));
-        setSelectedCategoryInd(-1);
-    }
-
-    const handleClearFilter = () => {
-        setFilterValue('');
-        setDisplayCategories(categories);
-    }
+    const {categories, loading, apiError, reFetchCategories: reFetchCategories} = useFetchCategories(ALL_CHANNELS_CAT);
+    const {filteredCategories, search} = useFilterCategories(categories);
+    //Contexts
+    const source = useContext(SourceContext);
+    const mode = useContext(ModeContext);
 
     const handleClearData= () => {
         if(!source)
             return
-        storageApi.cleanCategories(source.name);
-        initFromApi();
+        storageApi.cleanCategories(source.name, mode);
+        reFetchCategories(mode);
     }
 
     useImperativeHandle(ref, () => ({
@@ -103,51 +43,38 @@ const CategoriesView = forwardRef(({source, onSelect}: CategoryViewProps, ref: R
     if (!categories)
         return <></>
 
-    return <div className="container">
-        <div className="row">
-            {loading &&
-                <>
-                    <div className="spinner-border" role="status">
-                        <span className="visually-hidden">Loading...</span>
-                    </div>
-                </>}
-            {apiError &&
-                <>
-                    <div className="alert alert-danger" role="alert">
-                        Error while getting categories list.
-                    </div>
-                </>}
+    return (
+        <div className="container">
+            <Row>
+                <LoadingSpinner visible={loading}/>
+                <ErrorAlert error={apiError}/>
+            </Row>
+            <Row className="p-10 mb-2 flex-box justify-content-center">
+                <Col xs={2}><h4>Categories</h4></Col>
+                <SearchBar searchPlaceHolder="Search category" searchFn={search}/>
+            </Row>
+            <Row className="Horizontal-list-container">
+                <CategoryItems categories={filteredCategories} onSelect={onSelect} />
+            </Row>
         </div>
-        <div className="row p-10">
-            <div className="col-11 p-0">
-                <Form.Control type="text" placeholder="Search category" value={filterValue}
-                              onChange={(event) => handleSearch(event)}/>
-            </div>
-            {filterValue &&
-                <div className="col-1  p-0">
-                    <Button variant="link"
-                        onClick={() => handleClearFilter()}
-                        aria-label="Clear search"
-                        className="p-0">
-                            <X size={18} />
-                    </Button>
-                </div>
-            }
-        </div>
-        <ul className="list-group row p-3">
-            {
-                displayCategories?.map((category, index) => (
-                    <li key={category.categoryId}
-                        className={selectedCategoryInd === index ? "list-group-item active" : "list-group-item"}
-                        onClick={() => {
-                            setSelectedCategoryInd(index)
-                            onSelect(category);
-                        }
-                        }>{category.categoryName}</li>
-                ))
-            }
-        </ul>
-    </div>
+    );
 });
 
-export default CategoriesView;
+const CategoryItems = ({categories, onSelect}: {categories: Category[], onSelect: (category: Category) => void}) => {
+    const [selectedCategoryInd, setSelectedCategoryInd] = useState(-1);
+
+    return (
+        <ListGroup horizontal className="scrollable-list p-2">
+            {categories?.map((category, index) => (
+                <ListGroupItem key={category.categoryId}
+                               className={"my-list-item " + (selectedCategoryInd === index ? "list-group-item active" : "list-group-item")}
+                               onClick={() => {
+                                   setSelectedCategoryInd(index);
+                                   onSelect(category);
+                               }}>
+                    {category.categoryName}
+                </ListGroupItem>
+            ))}
+        </ListGroup>
+    )
+}
