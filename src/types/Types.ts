@@ -32,6 +32,14 @@ export type Stream = {
     tvArchiveDuration: number
 };
 
+export type VodStream = Stream &{
+    rating: string,
+    ratingFiveBased: string,
+    tmdb: string,
+    trailer: string,
+    containerExtension: string
+}
+
 export type UserInfo = {
     username: string;
     password: string;

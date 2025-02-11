@@ -1,4 +1,4 @@
-import {AppMode, Category, GlobalInfos, Source} from "../types/Types.ts";
+import {AppMode, Category, GlobalInfos, Source, Stream, VodStream} from "../types/Types.ts";
 import axios from "axios";
 
 //Api response types
@@ -23,6 +23,14 @@ type StreamResponse = {
     tv_archive: number;
     direct_source: string;
     tv_archive_duration: number;
+}
+
+type VodStreamResponse = StreamResponse & {
+    rating: string,
+    rating_5based: string,
+    tmdb: string,
+    trailer: string,
+    container_extension: string
 }
 
 //Api Paths
@@ -106,26 +114,47 @@ export const getStreams = async (source: Source, category: Category, mode: AppMo
         url += (category?.categoryId === 'ALL') ? '' : '&category_id=' + category.categoryId
         const apiResponse = await axios.get(url);
 
-        return Promise.resolve(apiResponse.data.map((stream: StreamResponse) => (
-            {
-                num: stream.num,
-                name: stream.name,
-                streamType: stream.stream_type,
-                streamId: stream.stream_id,
-                streamIcon: stream.stream_icon,
-                epgChannelId: stream.epg_channel_id,
-                added: stream.added,
-                isAdult: stream.is_adult,
-                categoryId: stream.category_id,
-                categoryIds: stream.category_ids,
-                customSid: stream.custom_sid,
-                tvArchive: stream.tv_archive,
-                directSource: stream.direct_source,
-                tvArchiveDuration: stream.tv_archive_duration
-            }
-        )));
+        return mode === 'TV' ? Promise.resolve(mapAllStreamResponseToStream(apiResponse.data))
+            :Promise.resolve(mapAllVodStreamResponseToVodStream(apiResponse.data));
     }catch (error){
         console.log(error);
         return Promise.reject(error);
+    }
+}
+
+const mapAllStreamResponseToStream = (streams: StreamResponse[]): Stream[] => {
+    return streams.map((stream: StreamResponse) => mapStreamResponseToStream(stream));
+}
+
+const mapStreamResponseToStream = (stream: StreamResponse): Stream => {
+    return {
+        num: stream.num,
+        name: stream.name,
+        streamType: stream.stream_type,
+        streamId: stream.stream_id,
+        streamIcon: stream.stream_icon,
+        epgChannelId: stream.epg_channel_id,
+        added: stream.added ? Number.parseInt(stream.added): 0,
+        isAdult: stream.is_adult,
+        categoryId: stream.category_id ? Number.parseInt(stream.category_id): 0,
+        categoryIds: stream.category_ids,
+        customSid: stream.custom_sid,
+        tvArchive: stream.tv_archive,
+        directSource: stream.direct_source,
+        tvArchiveDuration: stream.tv_archive_duration
+    }
+}
+
+const mapAllVodStreamResponseToVodStream = (streams: VodStreamResponse[]): VodStream[] => {
+    return streams.map((stream: VodStreamResponse) => mapStreamResponseToVodStream(stream));
+}
+const mapStreamResponseToVodStream = (stream: VodStreamResponse): VodStream => {
+    return {
+        ...mapStreamResponseToStream(stream),
+        rating: stream.rating,
+        ratingFiveBased: stream.rating_5based,
+        tmdb: stream.tmdb,
+        trailer: stream.trailer,
+        containerExtension: stream.container_extension
     }
 }
