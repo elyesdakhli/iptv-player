@@ -68,15 +68,11 @@ type StreamCardProps = {
     onSelect: (stream: Stream) => void;
 }
 const StreamCard = ({stream, index, onSelect}: StreamCardProps) => {
-    const [selectedStreamInd, setSelectedStreamInd] = useState(-1);
     const [hoveredStreamInd, setHoveredStreamInd] = useState(-1);
 
     return (<Col xs={12} sm={6} md={4} lg={3}>
-        <Card className={`h-100 ${(selectedStreamInd === index || hoveredStreamInd == index)? "border-primary shadow-lg" : "border-light"}`}
-              onClick={() => {
-                  setSelectedStreamInd(index);
-                  onSelect(stream)
-              }}
+        <Card className={`h-100 ${( hoveredStreamInd == index)? "border-primary shadow-lg" : "border-light"}`}
+              onClick={() => onSelect(stream)}
               onMouseEnter={() => setHoveredStreamInd(index)}
               onMouseLeave={() => setHoveredStreamInd(-1)}>
             <Card.Body>
