@@ -1,7 +1,7 @@
 import {Alert, Row} from "react-bootstrap";
 import {CategoriesRef, CategoriesView} from "./CategoriesView.tsx";
 import StreamsView from "./StreamsView.tsx";
-import ChannelView from "./ChannelView.tsx";
+import {ChannelView} from "./ChannelView.tsx";
 import {Category, Stream} from "../types/Types.ts";
 import {forwardRef, Ref, useImperativeHandle, useRef, useState} from "react";
 import {SourceContext} from "../context/SourceContext.ts";

@@ -9,7 +9,7 @@ type ChannelViewProps = {
     stream: Stream | VodStream | null;
     onCancelPlay: () => void;
 }
-function ChannelView({stream, onCancelPlay}: ChannelViewProps){
+export const ChannelView = ({stream, onCancelPlay}: ChannelViewProps) => {
     const source = useContext(SourceContext);
     const mode = useContext(ModeContext);
     const [streamUrl, setStreamUrl] = useState<string>('');
@@ -44,7 +44,7 @@ function ChannelView({stream, onCancelPlay}: ChannelViewProps){
                     <Col xs={1}><Button onClick={onCancelPlay} variant="secondary">Back</Button></Col>
                     <Col><h4><img src={stream.streamIcon} alt={''} height={25} width={25}/> {stream.name}</h4></Col>
                 </Row>
-                <Row className="justify-content-center mt-3">
+                <Row className="justify-content-center mt-2">
                     <Col xs={12} sm={10}>
                         <ReactPlayer
                             url={streamUrl} // Supports HLS, DASH, etc.
@@ -67,4 +67,3 @@ function ChannelView({stream, onCancelPlay}: ChannelViewProps){
             </>)
     }</>
 }
-export default ChannelView;

@@ -43,7 +43,7 @@ function StreamsView ({category, onSelect}: StreamsViewProps) {
             <LoadingSpinner visible={loading}/>
             <ErrorAlert error={apiError}/>
         </div>
-        <div className="row p-10 flex-box justify-content-center">
+        <div className="row p-10 flex-box">
             <Col xs={2}><h4>Channels</h4></Col>
             <SearchBar searchFn={handleSearch} searchPlaceHolder="Search channel" />
         </div>
@@ -104,7 +104,8 @@ const FilmStreamCard = ({stream, onSelect}: { stream: Stream, onSelect: (stream:
                           onError={() => setError(true)}
                     />
                 <Card.Body>
-                    <Card.Title>{stream.name}</Card.Title>
+                    {stream.name}
+                    {/*<Card.Title>{stream.name}</Card.Title>*/}
                 </Card.Body>
             </Card>
         </Col>

@@ -49,7 +49,7 @@ export const CategoriesView = forwardRef(({ onSelect }: CategoryViewProps, ref: 
                 <LoadingSpinner visible={loading}/>
                 <ErrorAlert error={apiError}/>
             </Row>
-            <Row className="p-10 mb-2 flex-box justify-content-center">
+            <Row className="p-10 mb-2 flex-box">
                 <Col xs={2}><h4>Categories</h4></Col>
                 <SearchBar searchPlaceHolder="Search category" searchFn={search}/>
             </Row>
