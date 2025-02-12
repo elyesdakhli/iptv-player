@@ -39,6 +39,7 @@ const TV_CATEGORIES_API_ACTION = 'get_live_categories';
 const VOD_CATEGORIES_API_ACTION = 'get_vod_categories';
 const TV_CATEGORY_STREAMS_API_ACTION = 'get_live_streams';
 const VOD_CATEGORY_STREAMS_API_ACTION = 'get_vod_streams';
+const VOD_STREAM_INFO_API_ACTION = 'get_vod_info';
 
 
 export const connect = async  (source: Source): Promise<GlobalInfos | null> => {
@@ -122,10 +123,46 @@ export const getStreams = async (source: Source, category: Category, mode: AppMo
     }
 }
 
+
+export type VodStreamInfo = {
+    name: string,
+    director: string,
+    releaseDate: string,
+    cast: string,
+    description: string,
+    genre: string
+    movieImage: string,
+    duration: string
+}
+
+export const getVodStreamInfo = async (source: Source, streamId: string): Promise<VodStreamInfo> => {
+    try {
+        const  url = source.url +'/'+PLAYER_API_PATH +
+            '?username='+source.username + '&password=' +source.password +
+            '&action=' + VOD_STREAM_INFO_API_ACTION +
+            '&vod_id=' + streamId;
+        const apiResponse = await axios.get(url);
+        const vodResponseInfo = apiResponse.data.info;
+
+        return Promise.resolve({
+            name: vodResponseInfo.name,
+            director: vodResponseInfo.director,
+            movieImage: vodResponseInfo.movie_image,
+            releaseDate: vodResponseInfo.releasedate,
+            cast : vodResponseInfo.cast || vodResponseInfo.actors,
+            description: vodResponseInfo.description || vodResponseInfo.plot,
+            genre: vodResponseInfo.genre,
+            duration: vodResponseInfo.duration
+        });
+    }catch (error){
+        console.log(error);
+        return Promise.reject(error);
+    }
+}
+//  Mappers
 const mapAllStreamResponseToStream = (streams: StreamResponse[]): Stream[] => {
     return streams.map((stream: StreamResponse) => mapStreamResponseToStream(stream));
 }
-
 const mapStreamResponseToStream = (stream: StreamResponse): Stream => {
     return {
         num: stream.num,
@@ -144,7 +181,6 @@ const mapStreamResponseToStream = (stream: StreamResponse): Stream => {
         tvArchiveDuration: stream.tv_archive_duration
     }
 }
-
 const mapAllVodStreamResponseToVodStream = (streams: VodStreamResponse[]): VodStream[] => {
     return streams.map((stream: VodStreamResponse) => mapStreamResponseToVodStream(stream));
 }
