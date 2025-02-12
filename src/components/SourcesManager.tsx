@@ -74,7 +74,6 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
         if(!formData.name)
             return;
         setSources(storageApi.deleteSource(formData.name));
-        storageApi.cleanCategories(formData.name);
         setFormData(EMPTY_SOURCE);
         setShowSourceForm(false);
         if(onSourcesChanged)
