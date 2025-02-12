@@ -1,4 +1,4 @@
-import {forwardRef, Ref, useContext, useImperativeHandle, useState} from "react";
+import {forwardRef, Ref, useContext, useEffect, useImperativeHandle, useState} from "react";
 import {Category} from "../types/Types.ts";
 import {Col, ListGroup, ListGroupItem, Row} from "react-bootstrap";
 import {storageApi} from "../api/storageApi.ts";
@@ -39,6 +39,10 @@ export const CategoriesView = forwardRef(({ onSelect }: CategoryViewProps, ref: 
     useImperativeHandle(ref, () => ({
         handleClearData
     }));
+
+    useEffect(() => {
+        reFetchCategories(mode);
+    }, [mode]);
 
     if (!categories)
         return <></>
