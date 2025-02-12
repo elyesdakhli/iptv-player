@@ -35,20 +35,22 @@ export const VodDetailsView = ({stream}: {stream: VodStream}) => {
         (mode === 'FILMS' && vodInfo) && (
             <>
                 <LoadingSpinner visible={loading} />
-                <Card>
-                    <Card.Img variant="top" src={noImage ? fallBackImage : vodInfo.movieImage} onError={() => setNoImage(true)}/>
-                    <Card.Body>
-                        <Card.Title>{stream.name}</Card.Title>
-                        <Card.Text>
-                            <p><strong>Genre:</strong> {vodInfo.genre}</p>
-                            <p><strong>Director:</strong> {vodInfo.director}</p>
-                            <p><strong>Release Date:</strong> {vodInfo.releaseDate}</p>
-                            <p><strong>Duration:</strong> {vodInfo.duration}</p>
-                            <p><strong>Description:</strong> {vodInfo.description}</p>
-                            <p><strong>Cast:</strong> {vodInfo.cast}</p>
-                        </Card.Text>
-                    </Card.Body>
-                </Card>
+                {vodInfo && (
+                    <Card>
+                        <Card.Img variant="top" src={noImage ? fallBackImage : vodInfo.movieImage} onError={() => setNoImage(true)}/>
+                        <Card.Body>
+                            <Card.Title>{stream.name}</Card.Title>
+                            <Card.Text>
+                                <p><strong>Genre:</strong> {vodInfo.genre}</p>
+                                <p><strong>Director:</strong> {vodInfo.director}</p>
+                                <p><strong>Release Date:</strong> {vodInfo.releaseDate}</p>
+                                <p><strong>Duration:</strong> {vodInfo.duration}</p>
+                                <p><strong>Description:</strong> {vodInfo.description}</p>
+                                <p><strong>Cast:</strong> {vodInfo.cast}</p>
+                            </Card.Text>
+                        </Card.Body>
+                    </Card>)
+                }
             </>
         )
     )
