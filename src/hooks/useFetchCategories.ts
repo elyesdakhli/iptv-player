@@ -17,25 +17,25 @@ export const useFetchCategories = (...staticCategories: Category[]) => {
         return [...categories, ...append];
     }
 
-    const fetchFromApi = () => {
+    const fetchFromApi = (fetchMode: AppMode) => {
         if(!source)
             return;
         setLoading(true);
         setApiError(null);
-        getCategories(source, mode)
+        getCategories(source, fetchMode)
             .then(categoriesData => {
                 setCategories(appendCategories(staticCategories, categoriesData));
-                storageApi.saveCategories(source.name, mode, categoriesData);
+                storageApi.saveCategories(source.name, fetchMode, categoriesData);
                 console.log("Categories loaded from api.");
             })
             .catch( (error) => setApiError(error))
             .finally( () => setLoading(false));
     }
 
-    const fetchFromCache = (newMode: AppMode): Category[] => {
+    const fetchFromCache = (fetchMode: AppMode): Category[] => {
         if(!source)
             return [];
-        const localStorageCategories = storageApi.getCategories(source.name, newMode);
+        const localStorageCategories = storageApi.getCategories(source.name, fetchMode);
 
         if(!localStorageCategories)
             return [];
@@ -48,15 +48,15 @@ export const useFetchCategories = (...staticCategories: Category[]) => {
 
     }
 
-    const doFetch = useCallback( (newMode: AppMode) => {
+    const doFetch = useCallback( (fetchMode: AppMode) => {
         if(!source)
             return;
         //Getting categories from cache (localstorage)
-        const cacheCategories = fetchFromCache(newMode);
+        const cacheCategories = fetchFromCache(fetchMode);
         if(cacheCategories?.length > 0)
             return;
         //Getting categories from api
-        fetchFromApi();
+        fetchFromApi(fetchMode);
     }, []);
 
     useEffect(() => {
