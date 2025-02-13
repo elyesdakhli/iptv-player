@@ -45,6 +45,7 @@ const PLAYER_API_PATH = "player_api.php";
 const TV_CATEGORIES_API_ACTION = "get_live_categories";
 const VOD_CATEGORIES_API_ACTION = "get_vod_categories";
 const TV_CATEGORY_STREAMS_API_ACTION = "get_live_streams";
+const TV_SHORT_EPG_API_ACTION = "get_short_epg";
 const VOD_CATEGORY_STREAMS_API_ACTION = "get_vod_streams";
 const VOD_STREAM_INFO_API_ACTION = "get_vod_info";
 
@@ -198,6 +199,84 @@ export const getVodStreamInfo = async (
     return Promise.reject(error);
   }
 };
+
+export type ShortEpg = {
+  id: string;
+  epgId: string;
+  title: string;
+  lang: string;
+  start: string;
+  end: string;
+  description: string;
+  channelId: string;
+  start_timestamp: number;
+  stop_timestamp: number;
+  streamId: string;
+};
+
+export const getEpg = async (
+  source: Source,
+  streamId: number
+): Promise<ShortEpg[]> => {
+  try {
+    //action=get_short_epg&stream_id=507471
+    const url =
+      source.url +
+      "/" +
+      PLAYER_API_PATH +
+      "?username=" +
+      source.username +
+      "&password=" +
+      source.password +
+      "&action=" +
+      TV_SHORT_EPG_API_ACTION +
+      "&stream_id=" +
+      streamId;
+    const apiResponse = await axios.get(url);
+    const epgListings = apiResponse.data.epg_listings;
+
+    return Promise.resolve(mapAllEpgListings(epgListings));
+  } catch (error) {
+    console.log(error);
+    return Promise.reject(error);
+  }
+};
+
+const mapAllEpgListings = (epgListings: any[]): ShortEpg[] => {
+  return epgListings.map((epgListing: any) => mapEpgListing(epgListing));
+};
+
+const mapEpgListing = (epgListing: any): ShortEpg => {
+  return {
+    id: epgListing.id,
+    epgId: epgListing.epg_id,
+    title: epgListing.title ? decodeBase64(epgListing.title) : "",
+    lang: epgListing.lang,
+    start: epgListing.start,
+    end: epgListing.end,
+    description: epgListing.description ? decodeBase64(epgListing.description, ) : "",
+    channelId: epgListing.channel_id,
+    start_timestamp: epgListing.start_timestamp
+      ? Number.parseInt(epgListing.start_timestamp)
+      : 0,
+    stop_timestamp: epgListing.stop_timestamp
+      ? Number.parseInt(epgListing.stop_timestamp)
+      : 0,
+    streamId: epgListing.stream_id,
+  };
+};
+
+const decodeBase64 = (base64String: string, charEncoding?: 'utf-8'): string => {
+    const binaryString = atob(base64String); // Decode Base64 to binary string
+    const bytes = new Uint8Array(binaryString.length);
+
+    for (let i = 0; i < binaryString.length; i++) {
+      bytes[i] = binaryString.charCodeAt(i);
+    }
+
+    return new TextDecoder(charEncoding).decode(bytes);
+}
+
 //  Mappers
 const mapAllStreamResponseToStream = (streams: StreamResponse[]): Stream[] => {
   return streams.map((stream: StreamResponse) =>
