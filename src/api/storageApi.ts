@@ -48,6 +48,11 @@ export const deleteSource = (sourceName: string): Source[] => {
     const sources = getSources() || [];
     const newSources = sources.filter(src => src.name !== sourceName);
     save(SOURCE_STORAGE_KEY, newSources);
+
+    //deletes source categories
+    cleanCategories(sourceName, 'TV');
+    cleanCategories(sourceName, 'FILMS');
+    cleanCategories(sourceName, 'SERIES');
     return newSources;
 }
 
