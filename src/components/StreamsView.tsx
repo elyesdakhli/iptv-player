@@ -9,6 +9,7 @@ import { ErrorAlert } from "./common/ErrorAlert.tsx";
 import { SearchBar } from "./common/SearchBar.tsx";
 import { useFetchStreams } from "../hooks/useFetchStreams.ts";
 import fallbackFilmImage from "../assets/film-play-transparant.png";
+import {proxyPrefix} from "../utils/proxy.ts";
 
 type StreamsViewProps = {
   category: Category | null;
@@ -112,7 +113,7 @@ const TvStreamCard = ({ stream, index, onSelect }: StreamCardProps) => {
       >
         <Card.Body>
           <Card.Body>
-            <img src={stream.streamIcon} alt={""} height={25} width={25} />{" "}
+            <img src={proxyPrefix(stream.streamIcon)} alt={""} height={25} width={25} />{" "}
             {stream.name}
           </Card.Body>
         </Card.Body>
@@ -135,7 +136,7 @@ const FilmStreamCard = ({
       <Card style={{ cursor: "pointer" }} onClick={() => onSelect(stream)}>
         <Card.Img
           variant="top"
-          src={error ? fallbackFilmImage : stream.streamIcon}
+          src={error ? fallbackFilmImage : proxyPrefix(stream.streamIcon)}
           onError={() => setError(true)}
         />
         <Card.Body>

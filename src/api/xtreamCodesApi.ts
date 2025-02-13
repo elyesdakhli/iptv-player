@@ -7,6 +7,7 @@ import {
   VodStream,
 } from "../types/Types.ts";
 import axios from "axios";
+import {proxyPrefix} from "../utils/proxy.ts";
 
 //Api response types
 type CategoryResponse = {
@@ -53,9 +54,9 @@ export const connect = async (source: Source): Promise<GlobalInfos | null> => {
   if (!source?.url || !source?.username || !source?.password) return null;
 
   try {
-    const apiResponse = await axios.get(
+    const apiResponse = await axios.get(proxyPrefix(
       `${source.url}/${PLAYER_API_PATH}?username=${source.username}&password=${source.password}`
-    );
+    ));
 
     const responseData = apiResponse.data;
     const responseUserInfo = responseData.user_info;
@@ -99,9 +100,9 @@ export const getCategories = async (
   try {
     const action =
       mode === "TV" ? TV_CATEGORIES_API_ACTION : VOD_CATEGORIES_API_ACTION;
-    const apiResponse = await axios.get(
+    const apiResponse = await axios.get(proxyPrefix(
       `${source.url}/${PLAYER_API_PATH}?username=${source.username}&password=${source.password}&action=${action}`
-    );
+    ));
 
     return Promise.resolve(
       apiResponse.data.map((cat: CategoryResponse) => ({
@@ -140,7 +141,7 @@ export const getStreams = async (
       category?.categoryId === "ALL"
         ? ""
         : "&category_id=" + category.categoryId;
-    const apiResponse = await axios.get(url);
+    const apiResponse = await axios.get(proxyPrefix(url));
 
     return mode === "TV"
       ? Promise.resolve(mapAllStreamResponseToStream(apiResponse.data))
@@ -168,8 +169,7 @@ export const getVodStreamInfo = async (
   streamId: string
 ): Promise<VodStreamInfo> => {
   try {
-    const url =
-      source.url +
+    const url =  source.url +
       "/" +
       PLAYER_API_PATH +
       "?username=" +
@@ -180,7 +180,7 @@ export const getVodStreamInfo = async (
       VOD_STREAM_INFO_API_ACTION +
       "&vod_id=" +
       streamId;
-    const apiResponse = await axios.get(url);
+    const apiResponse = await axios.get(proxyPrefix(url));
     const vodResponseInfo = apiResponse.data.info;
 
     return Promise.resolve({
@@ -221,7 +221,7 @@ export const getEpg = async (
   try {
     //action=get_short_epg&stream_id=507471
     const url =
-      source.url +
+        source.url + source.url +
       "/" +
       PLAYER_API_PATH +
       "?username=" +
@@ -232,7 +232,7 @@ export const getEpg = async (
       TV_SHORT_EPG_API_ACTION +
       "&stream_id=" +
       streamId;
-    const apiResponse = await axios.get(url);
+    const apiResponse = await axios.get(proxyPrefix(url));
     const epgListings = apiResponse.data.epg_listings;
 
     return Promise.resolve(mapAllEpgListings(epgListings));

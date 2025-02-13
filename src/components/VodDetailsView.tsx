@@ -7,6 +7,7 @@ import { LoadingSpinner } from "./common/LoadingSpinner.tsx";
 import { Card } from "react-bootstrap";
 import fallBackImage from "../assets/film-play-transparant.png";
 import { StarFill } from "react-bootstrap-icons";
+import {proxyPrefix} from "../utils/proxy.ts";
 
 export const VodDetailsView = ({ stream }: { stream: VodStream }) => {
   const mode = useContext(ModeContext);
@@ -39,7 +40,7 @@ export const VodDetailsView = ({ stream }: { stream: VodStream }) => {
           <Card>
             <Card.Img
               variant="top"
-              src={noImage ? fallBackImage : vodInfo.movieImage}
+              src={noImage ? fallBackImage : proxyPrefix(vodInfo.movieImage)}
               onError={() => setNoImage(true)}
             />
             <Card.Body>

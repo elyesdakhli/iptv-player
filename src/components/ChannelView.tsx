@@ -7,6 +7,7 @@ import { VodDetailsView } from "./VodDetailsView.tsx";
 import ReactPlayer from "react-player";
 import CopyToClipboad from "./common/CopyToClipboad.tsx";
 import { ChannelEpg } from "./ChannelEpg.tsx";
+import {proxyPrefix} from "../utils/proxy.ts";
 
 type ChannelViewProps = {
   stream: Stream | VodStream | null;
@@ -26,7 +27,8 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
     const streamExtension =
       mode === "FILMS" ? (stream as VodStream).containerExtension : "m3u8";
 
-    return `${source.url}/${streamType}/${source.username}/${source.password}/${stream.streamId}.${streamExtension}`;
+    const url = `${source.url}/${streamType}/${source.username}/${source.password}/${stream.streamId}.${streamExtension}`;
+    return proxyPrefix(url);
   }
 
   useEffect(() => {
@@ -48,7 +50,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
             </Col>
             <Col>
               <h4>
-                <img src={stream.streamIcon} alt={""} height={25} width={25} />{" "}
+                <img src={proxyPrefix(stream.streamIcon)} alt={""} height={25} width={25} />{" "}
                 {stream.name}
               </h4>
             </Col>
