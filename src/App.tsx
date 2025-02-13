@@ -1,9 +1,10 @@
 import SourcesView from "./components/SourcesView.tsx";
-import {Col, Dropdown, DropdownButton, Row} from "react-bootstrap";
+import {Col, Row} from "react-bootstrap";
 import {HomeRefs, HomeView} from "./components/HomeView.tsx";
 import {useRef, useState} from "react";
 import {AppMode} from "./types/Types.ts";
 import {ModeContext} from "./context/ModeContext.ts";
+import {AppModeSelector} from "./components/AppModeSelector.tsx";
 
 function App() {
     const homeViewRef = useRef<HomeRefs>(null);
@@ -19,12 +20,7 @@ function App() {
                 </Row>
                 <Row className="align-content-center">
                     <Col>
-                        <DropdownButton title={mode ||"Mode" } onSelect={(event) => setMode(event as AppMode)}
-                                        variant="success">
-                            <Dropdown.Item eventKey="TV">TV</Dropdown.Item>
-                            <Dropdown.Item eventKey="FILMS">Films</Dropdown.Item>
-                            <Dropdown.Item eventKey="SERIES">Series</Dropdown.Item>
-                        </DropdownButton>
+                        <AppModeSelector onSelect={(selMode: AppMode) => setMode(selMode)}/>
                     </Col>
                 </Row>
                 <ModeContext.Provider value={mode}>
