@@ -220,8 +220,7 @@ export const getEpg = async (
 ): Promise<ShortEpg[]> => {
   try {
     //action=get_short_epg&stream_id=507471
-    const url =
-        source.url + source.url +
+    const url = source.url +
       "/" +
       PLAYER_API_PATH +
       "?username=" +
