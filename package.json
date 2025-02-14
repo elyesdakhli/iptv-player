@@ -12,6 +12,7 @@
     "deploy": "gh-pages -d dist"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.66.0",
     "axios": "^1.7.9",
     "bootstrap": "^5.3.3",
     "hls.js": "^1.5.20",
