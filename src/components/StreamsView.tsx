@@ -10,6 +10,7 @@ import { SearchBar } from "./common/SearchBar.tsx";
 import { useFetchStreams } from "../hooks/useFetchStreams.ts";
 import fallbackFilmImage from "../assets/film-play-transparant.png";
 import {proxyPrefix} from "../utils/proxy.ts";
+import {MyImage} from "./common/MyImage.tsx";
 
 type StreamsViewProps = {
   category: Category | null;
@@ -113,7 +114,7 @@ const TvStreamCard = ({ stream, index, onSelect }: StreamCardProps) => {
       >
         <Card.Body>
           <Card.Body>
-            <img src={proxyPrefix(stream.streamIcon)} alt={""} height={25} width={25} />{" "}
+            <MyImage url={stream.streamIcon} height={25} width={25}/>
             {stream.name}
           </Card.Body>
         </Card.Body>

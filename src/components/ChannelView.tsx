@@ -8,6 +8,7 @@ import ReactPlayer from "react-player";
 import CopyToClipboad from "./common/CopyToClipboad.tsx";
 import { ChannelEpg } from "./ChannelEpg.tsx";
 import {proxyPrefix} from "../utils/proxy.ts";
+import {MyImage} from "./common/MyImage.tsx";
 
 type ChannelViewProps = {
   stream: Stream | VodStream | null;
@@ -50,7 +51,8 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
             </Col>
             <Col>
               <h4>
-                <img src={proxyPrefix(stream.streamIcon)} alt={""} height={25} width={25} />{" "}
+                <MyImage url={stream.streamIcon} height={25} width={25}/>
+                {/*<img src={proxyPrefix(stream.streamIcon)} alt={""} height={25} width={25} />{" "}*/}
                 {stream.name}
               </h4>
             </Col>
