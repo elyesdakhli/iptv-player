@@ -1,13 +1,12 @@
-import { Stream, VodStream } from "../types/Types.ts";
-import { useContext, useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
-import { SourceContext } from "../context/SourceContext.ts";
-import { ModeContext } from "../context/ModeContext.ts";
-import { VodDetailsView } from "./VodDetailsView.tsx";
+import {Stream, VodStream} from "../types/Types.ts";
+import {useContext, useEffect, useState} from "react";
+import {Button, Col, Row} from "react-bootstrap";
+import {SourceContext} from "../context/SourceContext.ts";
+import {ModeContext} from "../context/ModeContext.ts";
+import {VodDetailsView} from "./VodDetailsView.tsx";
 import ReactPlayer from "react-player";
 import CopyToClipboad from "./common/CopyToClipboad.tsx";
-import { ChannelEpg } from "./ChannelEpg.tsx";
-import {proxyPrefix} from "../utils/proxy.ts";
+import {ChannelEpg} from "./ChannelEpg.tsx";
 import {MyImage} from "./common/MyImage.tsx";
 
 type ChannelViewProps = {
@@ -28,8 +27,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
     const streamExtension =
       mode === "FILMS" ? (stream as VodStream).containerExtension : "m3u8";
 
-    const url = `${source.url}/${streamType}/${source.username}/${source.password}/${stream.streamId}.${streamExtension}`;
-    return proxyPrefix(url);
+    return `${source.url}/${streamType}/${source.username}/${source.password}/${stream.streamId}.${streamExtension}`;
   }
 
   useEffect(() => {
