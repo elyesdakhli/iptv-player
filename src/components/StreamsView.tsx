@@ -9,8 +9,8 @@ import { ErrorAlert } from "./common/ErrorAlert.tsx";
 import { SearchBar } from "./common/SearchBar.tsx";
 import { useFetchStreams } from "../hooks/useFetchStreams.ts";
 import fallbackFilmImage from "../assets/film-play-transparant.png";
-import {proxyPrefix} from "../utils/proxy.ts";
 import {MyImage} from "./common/MyImage.tsx";
+import {Tv} from "react-bootstrap-icons";
 
 type StreamsViewProps = {
   category: Category | null;
@@ -114,7 +114,9 @@ const TvStreamCard = ({ stream, index, onSelect }: StreamCardProps) => {
       >
         <Card.Body>
           <Card.Body>
-            <MyImage url={stream.streamIcon} height={25} width={25}/>
+            <MyImage url={stream.streamIcon} height={25} width={25}>
+              <Tv />
+            </MyImage>
             {stream.name}
           </Card.Body>
         </Card.Body>
@@ -130,19 +132,13 @@ const FilmStreamCard = ({
   stream: Stream;
   onSelect: (stream: Stream) => void;
 }) => {
-  const [error, setError] = useState(false);
 
   return (
     <Col xs={12} sm={6} md={4} lg={2}>
       <Card style={{ cursor: "pointer" }} onClick={() => onSelect(stream)}>
-        <Card.Img
-          variant="top"
-          src={error ? fallbackFilmImage : proxyPrefix(stream.streamIcon)}
-          onError={() => setError(true)}
-        />
+        <MyImage url={stream.streamIcon} fallbackImage={fallbackFilmImage}/>
         <Card.Body>
           {stream.name}
-          {/*<Card.Title>{stream.name}</Card.Title>*/}
         </Card.Body>
       </Card>
     </Col>

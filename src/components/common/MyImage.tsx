@@ -1,26 +1,38 @@
 import {proxyPrefix} from "../../utils/proxy.ts";
-import {useEffect, useState} from "react";
+import {PropsWithChildren, useEffect, useState} from "react";
 
-export const MyImage = ({ url, height, width }: { url: string; height: number; width: number }) => {
+export const MyImage = ({ url, height, width, fallbackImage, children }:
+                        PropsWithChildren & { url: string; height?: number; width?: number, fallbackImage?: any }) => {
 
     const [imageSrc, setImageSrc] = useState('');
+    const [isError, setIsError] = useState(false);
 
     const fetchImage = async () => {
-        const response = await fetch(proxyPrefix(url));
-        return response.blob();
+        try{
+            const response = await fetch(proxyPrefix(url));
+
+            return response.ok ? new Promise((resolve) => resolve(response.blob()))
+                 : new Promise((reject) => reject(new Error('Failed to fetch image')));
+        }catch (e) {
+            new Promise((reject) => reject(e));
+        }
     }
 
     useEffect(() => {
         fetchImage()
             .then((blob) => {
-                setImageSrc(URL.createObjectURL(blob));
+                setImageSrc(URL.createObjectURL(blob as Blob));
             })
-            .catch((error) => {
-                console.error("Error fetching image", error);
+            .catch(() => {
+                if (fallbackImage)
+                    setImageSrc(fallbackImage);
+                setIsError(true);
             });
     }, []);
 
     return (
-        <img src={imageSrc} alt={""} height={height} width={width} />
+        <>
+            {(isError && !fallbackImage) ? (<span>{children}</span>) : (<img src={imageSrc} alt={""} height={height} width={width}/>)}
+        </>
     );
 }
