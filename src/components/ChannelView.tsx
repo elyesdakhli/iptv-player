@@ -8,6 +8,7 @@ import ReactPlayer from "react-player";
 import CopyToClipboad from "./common/CopyToClipboad.tsx";
 import {ChannelEpg} from "./ChannelEpg.tsx";
 import {MyImage} from "./common/MyImage.tsx";
+import fallbackFilmImage from "../assets/film-play-transparant.png";
 
 type ChannelViewProps = {
   stream: Stream | VodStream | null;
@@ -49,8 +50,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
             </Col>
             <Col>
               <h4>
-                <MyImage url={stream.streamIcon} height={25} width={25}/>
-                {/*<img src={proxyPrefix(stream.streamIcon)} alt={""} height={25} width={25} />{" "}*/}
+                <MyImage url={stream.streamIcon} height={25} width={25} fallbackImage={fallbackFilmImage}/>
                 {stream.name}
               </h4>
             </Col>
@@ -75,7 +75,10 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
                     hlsOptions: {
                       maxBufferSize: 10 * 1000 * 1000, // Adjust buffer size if needed
                     },
-                  },
+                    attributes: {
+                      crossOrigin: "anonymous",
+                      }
+                  }
                 }}
                 onError={(error) => console.log(error)}
               />
