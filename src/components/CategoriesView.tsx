@@ -1,11 +1,11 @@
 import {
-  forwardRef,
-  Ref,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
+    forwardRef, memo,
+    Ref, useCallback,
+    useContext,
+    useEffect,
+    useImperativeHandle,
+    useRef,
+    useState,
 } from "react";
 import { Category } from "../types/Types.ts";
 import { Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
@@ -33,7 +33,7 @@ const ALL_CHANNELS_CAT: Category = {
   parentId: "",
 };
 
-export const CategoriesView = forwardRef(
+export const CategoriesView = memo(forwardRef(
   ({ onSelect }: CategoryViewProps, ref: Ref<CategoriesRef>) => {
     const {
       categories,
@@ -49,22 +49,23 @@ export const CategoriesView = forwardRef(
     const source = useContext(SourceContext);
     const mode = useContext(ModeContext);
 
-    const handleClearData = () => {
+    const handleClearData = useCallback(() => {
       if (!source) return;
       storageApi.cleanCategories(source.name, mode);
-      reFetchCategories(mode);
-    };
+      reFetchCategories();
+    }, [source, mode]);
 
     useImperativeHandle(ref, () => ({
       handleClearData,
     }));
 
     useEffect(() => {
-      reFetchCategories(mode);
+      reFetchCategories();
       clearFilter();
       searchBarRef.current?.resetSearch();
     }, [mode]);
 
+    console.log("CategoriesView rendered");
     if (!categories) return <></>;
 
     return (
@@ -89,7 +90,7 @@ export const CategoriesView = forwardRef(
       </div>
     );
   }
-);
+));
 
 const CategoryItems = ({
   categories,

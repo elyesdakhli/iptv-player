@@ -1,14 +1,16 @@
-import {AppMode, Category, Source, Stream} from "../types/Types.ts";
-import {useCallback, useEffect, useState} from "react";
+import {AppMode, Category, Stream} from "../types/Types.ts";
+import {useCallback, useContext, useEffect, useState} from "react";
 import {getStreams} from "../api/xtreamCodesApi.ts";
+import {SourceContext} from "../context/SourceContext.ts";
+import {ModeContext} from "../context/ModeContext.ts";
 
 export type FetchStreamsProps = {
-    source: Source|null;
-    mode: AppMode;
     category: Category|null
 }
-export const useFetchStreams = ({source, mode, category}: FetchStreamsProps) => {
+export const useFetchStreams = ({ category}: FetchStreamsProps) => {
 
+    const source = useContext(SourceContext);
+    const mode = useContext(ModeContext);
     const [loading, setLoading] = useState(true);
     const [apiError, setApiError] = useState<Error|null>(null);
     const [streams, setStreams] = useState<Stream[]>([]);

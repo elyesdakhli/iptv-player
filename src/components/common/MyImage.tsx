@@ -1,7 +1,7 @@
 import {proxyPrefix} from "../../utils/proxy.ts";
-import {PropsWithChildren, useEffect, useState} from "react";
+import {memo, PropsWithChildren, useEffect, useState} from "react";
 
-export const MyImage = ({ url, height, width, fallbackImage, children }:
+export const MyImage = memo(({ url, height, width, fallbackImage, children }:
                         PropsWithChildren & { url: string; height?: number; width?: number, fallbackImage?: any }) => {
 
     const [imageSrc, setImageSrc] = useState('');
@@ -35,4 +35,4 @@ export const MyImage = ({ url, height, width, fallbackImage, children }:
             {(isError && !fallbackImage) ? (<span>{children}</span>) : (<img src={imageSrc} alt={""} height={height} width={width}/>)}
         </>
     );
-}
+});
