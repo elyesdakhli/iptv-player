@@ -9,7 +9,8 @@ export const MyImage = memo(({ url, height, width, fallbackImage, children }:
 
     const fetchImage = async () => {
         try{
-            const response = await fetch(proxyPrefix(url));
+            const urlWithProxy = url.startsWith('https') ? url : proxyPrefix(url);
+            const response = await fetch(urlWithProxy);
 
             return response.ok ? new Promise((resolve) => resolve(response.blob()))
                  : new Promise((reject) => reject(new Error('Failed to fetch image')));
