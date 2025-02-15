@@ -22,7 +22,7 @@ export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
 
 
   const { loading, apiError, streams } = useQueryStreams({ category});
-  //const { loading, apiError, streams } = useFetchStreams({category});
+  // const { loading, apiError, streams } = useFetchStreams({category});
   const searchBarRef = useRef<SearchBarRef>(null);
   console.log("StreamsView rendered: category: ", category?.categoryName, ' loading: ', loading, ' apiError: ', apiError, ' streams: ', streams?.length);
 
@@ -34,20 +34,20 @@ export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
     }
   }, [streams]);
 
-  const filterStreams = useCallback((searchValue: string, streams: Stream[]) => {
+  const filterStreams = useCallback((searchValue: string) => {
     return !searchValue
       ? streams
       : streams.filter((stream) =>
           stream.name.toLowerCase().includes(searchValue.toLowerCase())
         );
-  }, []);
+  }, [streams]);
 
   const handleSearch = useCallback((searchValue: string) => {
     console.log("handleSearch: ", searchValue);
     if (!streams)
       return;
-    setDisplayStream(filterStreams(searchValue, streams));
-  }, []);
+    setDisplayStream(filterStreams(searchValue));
+  }, [streams]);
 
   if (!category) return <></>;
   return (
