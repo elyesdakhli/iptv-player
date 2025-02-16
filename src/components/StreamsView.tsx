@@ -77,9 +77,40 @@ const StreamItems = memo(({
   onSelect: (stream: Stream) => void;
 }) => {
   const mode = useContext(ModeContext);
+  const [displayedStreams, setDisplayedStreams] = useState<Stream[]>([]);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (streams) {
+      setDisplayedStreams(streams.slice(0, 50)); // Initial load
+    }
+  }, [streams]);
+
+  const loadMore = useCallback(() => {
+    if (streams && displayedStreams.length < streams.length) {
+      setDisplayedStreams((prev) => [
+        ...prev,
+        ...streams.slice(prev.length, prev.length + 50),
+      ]);
+    }
+  }, [streams, displayedStreams]);
+
+  useEffect(() => {
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMore();
+      }
+    });
+    if (loadMoreRef.current) {
+      observer.current.observe(loadMoreRef.current);
+    }
+  }, [loadMore]);
+
   return mode === "TV" ? (
     <>
-      {streams?.map((stream, index) => (
+      {displayedStreams?.map((stream, index) => (
         <TvStreamCard
           stream={stream}
           index={index}
@@ -87,12 +118,14 @@ const StreamItems = memo(({
           onSelect={onSelect}
         />
       ))}
+      <div style={{width: '500px', height: '5px'}} ref={loadMoreRef} />
     </>
   ) : (
     <>
-      {streams?.map((stream, index) => (
+      {displayedStreams?.map((stream, index) => (
         <FilmStreamCard stream={stream} key={index} onSelect={onSelect} />
       ))}
+      <div style={{width: '500px', height: '5px'}} ref={loadMoreRef} />
     </>
   );
 });
