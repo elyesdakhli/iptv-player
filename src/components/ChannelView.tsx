@@ -85,7 +85,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
             </Col>
             <Col xs={12} sm={2} lg={3}>
               {mode === "TV" ? (
-                <ChannelEpg stream={stream} />
+                <ChannelEpg stream={stream} className="vertical-scroll"/>
               ) : (
                 <VodDetailsView stream={stream as VodStream} />
               )}

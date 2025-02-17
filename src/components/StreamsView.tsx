@@ -1,7 +1,6 @@
 import {Category, Stream} from "../types/Types.ts";
 import {memo, useCallback, useContext, useEffect, useRef, useState} from "react";
 import {Card, Col, Row} from "react-bootstrap";
-import "../css/streams.css";
 
 import {ModeContext} from "../context/ModeContext.ts";
 import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
@@ -22,7 +21,6 @@ export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
 
 
   const { loading, apiError, streams } = useQueryStreams({ category});
-  // const { loading, apiError, streams } = useFetchStreams({category});
   const searchBarRef = useRef<SearchBarRef>(null);
   console.log("StreamsView rendered: category: ", category?.categoryName, ' loading: ', loading, ' apiError: ', apiError, ' streams: ', streams?.length);
 
@@ -62,7 +60,7 @@ export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
         </Col>
         <SearchBar ref={searchBarRef} onSearch={handleSearch} searchPlaceHolder="Search channel" />
       </div>
-      <Row className="vh-100 g-4 mt-3 vertical-scroll">
+      <Row className="g-4 mt-3 vertical-scroll">
         <StreamItems streams={displayStreams} onSelect={onSelect} />
       </Row>
     </div>
