@@ -74,7 +74,7 @@ export const CategoriesView = memo(forwardRef(
           <LoadingSpinner visible={loading} />
           <ErrorAlert error={apiError} />
         </Row>
-        <Row className="p-10 mb-2 flex-box">
+        <Row className="p-10 mb-2">
           <Col xs={2}>
             <h4>Categories</h4>
           </Col>

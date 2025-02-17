@@ -10,10 +10,10 @@ export const AppModeSelector = ({onSelect}: {onSelect: (mode: AppMode) => void})
                 setMode(event as AppMode);
                 onSelect(event as AppMode)
               }
-            } variant="success">
+            } variant="secondary">
             <Dropdown.Item eventKey="TV">TV</Dropdown.Item>
             <Dropdown.Item eventKey="FILMS">Films</Dropdown.Item>
-            <Dropdown.Item eventKey="SERIES">Series</Dropdown.Item>
+            <Dropdown.Item eventKey="SERIES" disabled>Series</Dropdown.Item>
         </DropdownButton>
     )
 }

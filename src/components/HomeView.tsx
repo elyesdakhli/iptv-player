@@ -12,7 +12,8 @@ export type HomeRefs = {
     handleClearData: () => void;
     handleSourceChanged: () => void;
 }
-export const HomeView = forwardRef((_: {}, ref: Ref<HomeRefs>) => {
+export const HomeView = forwardRef(({className}: {className?: string},
+                                    ref: Ref<HomeRefs>) => {
 
     const {activeSource, loadActiveSource} = useActiveSource();
 
@@ -51,17 +52,17 @@ export const HomeView = forwardRef((_: {}, ref: Ref<HomeRefs>) => {
         handleClearData,
         handleSourceChanged
     }));
-    return <>
+    return <div className={className}>
         <SourceContext.Provider value={activeSource}>
             {!activeSource && (
-                <Alert variant='warning'>No Active source found.</Alert>
+                <Alert variant='light'>No Active source found.</Alert>
             )}
             {activeSource &&(
                 <>
-                    <Row hidden={selectedStream != null}>
+                    <Row className='mt-2' hidden={selectedStream != null}>
                         <CategoriesView onSelect={handleSelectCategory} ref={categoriesViewRef}/>
                     </Row>
-                    <Row className="" hidden={selectedStream != null}>
+                    <Row className="mt-2" hidden={selectedStream != null}>
                         {selectedCategory && <StreamsView category={selectedCategory} onSelect={handleSelectStream}/>}
                     </Row>
                     <Row>
@@ -70,5 +71,5 @@ export const HomeView = forwardRef((_: {}, ref: Ref<HomeRefs>) => {
                 </>
             )}
         </SourceContext.Provider>
-    </>
+    </div>
 });

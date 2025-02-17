@@ -14,17 +14,20 @@ function App() {
         <>
             <div className="container-fluid">
                 <Row className="p-2">
-                    <Col><h1 className="text-center">Iptv player</h1></Col>
+                    <Col><h1 className="text-center">Iptvyk</h1></Col>
                     <SourcesView onClearData={homeViewRef.current?.handleClearData}
                                  onSourcesChanged={homeViewRef.current?.handleSourceChanged}/>
                 </Row>
-                <Row className="align-content-center">
-                    <Col>
+                <Row className="align-content-center mt-2">
+                    <Col xs={2}>
+                        <h4>Mode</h4>
+                    </Col>
+                    <Col xs={10}>
                         <AppModeSelector onSelect={(selMode: AppMode) => setMode(selMode)}/>
                     </Col>
                 </Row>
                 <ModeContext.Provider value={mode}>
-                    <HomeView ref={homeViewRef}/>
+                    <HomeView ref={homeViewRef} className='mt-2'/>
                 </ModeContext.Provider>
             </div>
         </>

@@ -137,7 +137,7 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
                                 </div>
                                 <div className="row mt-3 justify-content-center">
                                     <Button className="col-md-3 mx-1" variant="primary" disabled={!formRef.current?.checkValidity()} type="submit">{!editMode ? 'Add' : 'Save'}</Button>
-                                    <Button className="col-md-3 mx-1" variant="dark" onClick={()=> setShowSourceForm(false)}>Cancel</Button>
+                                    <Button className="col-md-3 mx-1" variant="light" onClick={()=> setShowSourceForm(false)}>Cancel</Button>
                                     <Button className="col-md-3 mx-1" variant="danger" disabled={!editMode} onClick={deleteSource}>Delete</Button>
                                 </div>
                             </Form>

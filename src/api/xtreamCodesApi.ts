@@ -50,8 +50,8 @@ const TV_SHORT_EPG_API_ACTION = "get_short_epg";
 const VOD_CATEGORY_STREAMS_API_ACTION = "get_vod_streams";
 const VOD_STREAM_INFO_API_ACTION = "get_vod_info";
 
-export const connect = async (source: Source): Promise<GlobalInfos | null> => {
-  if (!source?.url || !source?.username || !source?.password) return null;
+export const connect = async (source: Source | null): Promise<GlobalInfos | null> => {
+  if (!source || !source?.url || !source?.username || !source?.password) return null;
 
   try {
     const apiResponse = await axios.get(proxyPrefix(
