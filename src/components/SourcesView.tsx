@@ -46,6 +46,8 @@ function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
                 <span className="me-1">
                     <SourcesManager onSourcesChanged={onSourcesChanged}/>
                 </span>
+            </Col>
+            <Col>
                 {activeSource && (
                     <Button variant="secondary" onClick={onClearData} style={{ cursor: "pointer" }}>Clear & Reload</Button>
                 )}

@@ -14,7 +14,7 @@ function App() {
         <>
             <div className="container-fluid">
                 <Row className="p-2">
-                    <Col><h1 className="text-center">Iptvyk</h1></Col>
+                    <Col xl={3}><h1 className="text-center">Iptvyk</h1></Col>
                     <SourcesView onClearData={homeViewRef.current?.handleClearData}
                                  onSourcesChanged={homeViewRef.current?.handleSourceChanged}/>
                 </Row>
