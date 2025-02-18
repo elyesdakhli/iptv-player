@@ -1,6 +1,6 @@
 import {Button, Col} from "react-bootstrap";
 import {connect} from "../api/xtreamCodesApi.ts";
-import {SourcesManager} from "./SourcesManager.tsx";
+import {SourcesManager} from "./source/SourcesManager.tsx";
 import {useActiveSource} from "../hooks/useActiveSource.ts";
 import {useQuery} from "@tanstack/react-query";
 import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
