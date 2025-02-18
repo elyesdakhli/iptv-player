@@ -6,7 +6,6 @@ import {Category, Stream} from "../types/Types.ts";
 import {forwardRef, Ref, useCallback, useImperativeHandle, useRef, useState} from "react";
 import {SourceContext} from "../context/SourceContext.ts";
 import {useActiveSource} from "../hooks/useActiveSource.ts";
-import * as stream from "node:stream";
 
 export type HomeRefs = {
     handleClearData: () => void;
@@ -30,7 +29,7 @@ export const HomeView = forwardRef(({className}: {className?: string},
 
     const handleSelectStream = useCallback((stream: Stream | null) => {
         setSelectedStream(stream);
-    }, [stream]);
+    }, []);
 
     const handleCancelPlay = () => {
         handleSelectStream(null);
