@@ -5,7 +5,7 @@ import {useContext, useEffect, useState} from "react";
 import { SourceContext } from "../context/SourceContext";
 import { LoadingSpinner } from "./common/LoadingSpinner";
 
-export const ChannelEpg = ({ stream }: { stream: Stream }) => {
+export const ChannelEpg = ({ stream, className }: { stream: Stream, className?: string }) => {
 
   const source = useContext(SourceContext);
   const [loading, setLoading] = useState(false);
@@ -24,10 +24,11 @@ export const ChannelEpg = ({ stream }: { stream: Stream }) => {
             setShortEpgs(shortEpgList);
         })
         .finally(() => setLoading(false));
-    }, [stream]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [source, stream]);
 
   return (
-    <div className="vh-100 overflow-y-scroll">
+    <div className={className}>
         <LoadingSpinner visible={loading} />
         {shortEpgs &&
             <>

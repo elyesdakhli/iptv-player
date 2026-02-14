@@ -1,72 +1,47 @@
 import {Alert, Row} from "react-bootstrap";
-import {CategoriesRef, CategoriesView} from "./CategoriesView.tsx";
-import StreamsView from "./StreamsView.tsx";
+import {CategoriesView} from "./CategoriesView.tsx";
+import {StreamsView} from "./StreamsView.tsx";
 import {ChannelView} from "./ChannelView.tsx";
-import {Category, Stream} from "../types/Types.ts";
-import {forwardRef, Ref, useImperativeHandle, useRef, useState} from "react";
-import {SourceContext} from "../context/SourceContext.ts";
-import {useActiveSource} from "../hooks/useActiveSource.ts";
+import {Category, Source, Stream} from "../types/Types.ts";
 
-export type HomeRefs = {
-    handleClearData: () => void;
-    handleSourceChanged: () => void;
-}
-export const HomeView = forwardRef((_: {}, ref: Ref<HomeRefs>) => {
+type HomeViewProps = {
+    className?: string;
+    activeSource: Source | null;
+    selectedCategory: Category | null;
+    selectedStream: Stream | null;
+    clearCacheSignal: number;
+    onSelectCategory: (category: Category | null) => void;
+    onSelectStream: (stream: Stream | null) => void;
+    onCancelPlay: () => void;
+};
 
-    const {activeSource, loadActiveSource} = useActiveSource();
+export const HomeView = ({
+    className,
+    activeSource,
+    selectedCategory,
+    selectedStream,
+    clearCacheSignal,
+    onSelectCategory,
+    onSelectStream,
+    onCancelPlay
+}: HomeViewProps) => {
 
-    const [selectedCategory, setSelectedCategory] = useState<Category|null>(null);
-    const [selectedStream, setSelectedStream] = useState<Stream|null>(null);
-    const categoriesViewRef = useRef<CategoriesRef>(null);
-
-
-    const handleSelectCategory = (category: Category | null) => {
-        setSelectedCategory(category);
-        setSelectedStream(null);
-    }
-
-    const handleSelectStream = (stream: Stream | null) => {
-        setSelectedStream(stream);
-    }
-
-    const handleCancelPlay = () => {
-        handleSelectStream(null);
-    }
-
-    const handleClearData = () => {
-        handleSelectStream(null);
-        handleSelectCategory(null);
-        categoriesViewRef.current?.handleClearData();
-    }
-
-    const handleSourceChanged = () => {
-        handleSelectStream(null);
-        handleSelectCategory(null);
-        loadActiveSource();
-    }
-
-    useImperativeHandle(ref, () => ({
-        handleClearData,
-        handleSourceChanged
-    }));
-    return <>
-        <SourceContext.Provider value={activeSource}>
-            {!activeSource && (
-                <Alert variant='warning'>No Active source found.</Alert>
-            )}
-            {activeSource &&(
-                <>
-                    <Row hidden={selectedStream != null}>
-                        <CategoriesView onSelect={handleSelectCategory} ref={categoriesViewRef}/>
-                    </Row>
-                    <Row className="" hidden={selectedStream != null}>
-                        <StreamsView category={selectedCategory} onSelect={handleSelectStream}/>
-                    </Row>
-                    <Row>
-                        <ChannelView stream={selectedStream} onCancelPlay={handleCancelPlay}/>
-                    </Row>
-                </>
-            )}
-        </SourceContext.Provider>
-    </>
-});
+    return <div className={className}>
+        {!activeSource && (
+            <Alert variant='light'>No Active source found.</Alert>
+        )}
+        {activeSource && (
+            <>
+                <Row className='mt-2' hidden={selectedStream != null}>
+                    <CategoriesView onSelect={onSelectCategory} clearCacheSignal={clearCacheSignal}/>
+                </Row>
+                <Row className="mt-2" hidden={selectedStream != null}>
+                    {selectedCategory && <StreamsView category={selectedCategory} onSelect={onSelectStream}/>}
+                </Row>
+                <Row>
+                    <ChannelView stream={selectedStream} onCancelPlay={onCancelPlay}/>
+                </Row>
+            </>
+        )}
+    </div>
+};

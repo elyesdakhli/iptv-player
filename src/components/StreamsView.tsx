@@ -1,46 +1,35 @@
-import { Category, Stream } from "../types/Types.ts";
-import { useContext, useEffect, useState } from "react";
-import { Card, Col, Row } from "react-bootstrap";
-import "../css/streams.css";
-import { SourceContext } from "../context/SourceContext.ts";
-import { ModeContext } from "../context/ModeContext.ts";
-import { LoadingSpinner } from "./common/LoadingSpinner.tsx";
-import { ErrorAlert } from "./common/ErrorAlert.tsx";
-import { SearchBar } from "./common/SearchBar.tsx";
-import { useFetchStreams } from "../hooks/useFetchStreams.ts";
+import {Category, Stream} from "../types/Types.ts";
+import {memo, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
+import {Card, Col, Row} from "react-bootstrap";
+
+import {ModeContext} from "../context/ModeContext.ts";
+import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
+import {ErrorAlert} from "./common/ErrorAlert.tsx";
+import {SearchBar} from "./common/SearchBar.tsx";
 import fallbackFilmImage from "../assets/film-play-transparant.png";
+import {MyImage} from "./common/MyImage.tsx";
+import {Tv} from "react-bootstrap-icons";
+import {useQueryStreams} from "../hooks/useQueryStreams.ts";
 
 type StreamsViewProps = {
   category: Category | null;
   onSelect: (stream: Stream) => void;
 };
 
-function StreamsView({ category, onSelect }: StreamsViewProps) {
-  const source = useContext(SourceContext);
-  const mode = useContext(ModeContext);
-  const { loading, apiError, streams } = useFetchStreams({
-    source,
-    mode,
-    category,
-  });
-  const [displayStreams, setDisplayStreams] = useState<Stream[]>(streams);
+export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
+  const { loading, apiError, streams } = useQueryStreams({ category});
+  const [searchValue, setSearchValue] = useState("");
+
+  const filteredStreams = useMemo(() => {
+    if (!searchValue) return streams;
+    return streams.filter((stream) =>
+      stream.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }, [streams, searchValue]);
 
   useEffect(() => {
-    setDisplayStreams(streams);
-  }, [streams]);
-
-  function filterStreams(searchValue: string, streams: Stream[]) {
-    return !searchValue
-      ? streams
-      : streams.filter((stream) =>
-          stream.name.toLowerCase().includes(searchValue.toLowerCase())
-        );
-  }
-
-  function handleSearch(searchValue: string) {
-    if (!streams) return;
-    setDisplayStreams(filterStreams(searchValue, streams));
-  }
+    setSearchValue("");
+  }, [category]);
 
   if (!category) return <></>;
   return (
@@ -53,16 +42,16 @@ function StreamsView({ category, onSelect }: StreamsViewProps) {
         <Col xs={2}>
           <h4>Channels</h4>
         </Col>
-        <SearchBar onSearch={handleSearch} searchPlaceHolder="Search channel" />
+        <SearchBar onSearch={setSearchValue} searchPlaceHolder="Search channel" />
       </div>
-      <Row className="vh-100 g-4 mt-3 vertical-scroll">
-        <StreamItems streams={displayStreams} onSelect={onSelect} />
+      <Row className="g-4 mt-3 vertical-scroll">
+        <StreamItems streams={filteredStreams} onSelect={onSelect} />
       </Row>
     </div>
   );
-}
+});
 
-const StreamItems = ({
+const StreamItems = memo(({
   streams,
   onSelect,
 }: {
@@ -70,9 +59,40 @@ const StreamItems = ({
   onSelect: (stream: Stream) => void;
 }) => {
   const mode = useContext(ModeContext);
+  const [displayedStreams, setDisplayedStreams] = useState<Stream[]>([]);
+  const observer = useRef<IntersectionObserver | null>(null);
+  const loadMoreRef = useRef<HTMLDivElement | null>(null);
+
+  useEffect(() => {
+    if (streams) {
+      setDisplayedStreams(streams.slice(0, 50)); // Initial load
+    }
+  }, [streams]);
+
+  const loadMore = useCallback(() => {
+    if (streams && displayedStreams.length < streams.length) {
+      setDisplayedStreams((prev) => [
+        ...prev,
+        ...streams.slice(prev.length, prev.length + 50),
+      ]);
+    }
+  }, [streams, displayedStreams]);
+
+  useEffect(() => {
+    if (observer.current) observer.current.disconnect();
+    observer.current = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) {
+        loadMore();
+      }
+    });
+    if (loadMoreRef.current) {
+      observer.current.observe(loadMoreRef.current);
+    }
+  }, [loadMore]);
+
   return mode === "TV" ? (
     <>
-      {streams?.map((stream, index) => (
+      {displayedStreams?.map((stream, index) => (
         <TvStreamCard
           stream={stream}
           index={index}
@@ -80,22 +100,24 @@ const StreamItems = ({
           onSelect={onSelect}
         />
       ))}
+      <div style={{width: '500px', height: '5px'}} ref={loadMoreRef} />
     </>
   ) : (
     <>
-      {streams?.map((stream, index) => (
+      {displayedStreams?.map((stream, index) => (
         <FilmStreamCard stream={stream} key={index} onSelect={onSelect} />
       ))}
+      <div style={{width: '500px', height: '5px'}} ref={loadMoreRef} />
     </>
   );
-};
+});
 
 type StreamCardProps = {
   stream: Stream;
   index: number;
   onSelect: (stream: Stream) => void;
 };
-const TvStreamCard = ({ stream, index, onSelect }: StreamCardProps) => {
+const TvStreamCard = memo(({ stream, index, onSelect }: StreamCardProps) => {
   const [hoveredStreamInd, setHoveredStreamInd] = useState(-1);
 
   return (
@@ -112,39 +134,33 @@ const TvStreamCard = ({ stream, index, onSelect }: StreamCardProps) => {
       >
         <Card.Body>
           <Card.Body>
-            <img src={stream.streamIcon} alt={""} height={25} width={25} />{" "}
+            <MyImage url={stream.streamIcon} height={25} width={25}>
+              <Tv />
+            </MyImage>
             {stream.name}
           </Card.Body>
         </Card.Body>
       </Card>
     </Col>
   );
-};
+});
 
-const FilmStreamCard = ({
+const FilmStreamCard = memo(({
   stream,
   onSelect,
 }: {
   stream: Stream;
   onSelect: (stream: Stream) => void;
 }) => {
-  const [error, setError] = useState(false);
 
   return (
     <Col xs={12} sm={6} md={4} lg={2}>
       <Card style={{ cursor: "pointer" }} onClick={() => onSelect(stream)}>
-        <Card.Img
-          variant="top"
-          src={error ? fallbackFilmImage : stream.streamIcon}
-          onError={() => setError(true)}
-        />
+        <MyImage url={stream.streamIcon} fallbackImage={fallbackFilmImage}/>
         <Card.Body>
           {stream.name}
-          {/*<Card.Title>{stream.name}</Card.Title>*/}
         </Card.Body>
       </Card>
     </Col>
   );
-};
-
-export default StreamsView;
+});

@@ -25,7 +25,7 @@ export const SearchBar = forwardRef(
 
     return (
       <>
-        <Col xs={2} className="p-10">
+        <Col className="p-10" xs={8} md={4}>
           <Form.Control
             type="text"
             placeholder={searchPlaceHolder}
@@ -33,7 +33,7 @@ export const SearchBar = forwardRef(
             onChange={(event) => setFilterAndTriggerSearch(event.target.value)}
           />
         </Col>
-        <Col xs={1} className="p-0">
+        <Col className="p-0" xs={2}>
           {filterValue && (
             <Button
               variant="link"
@@ -44,9 +44,7 @@ export const SearchBar = forwardRef(
               <X size={18} />
             </Button>
           )}
-        </Col>
-        <Col xs={1}>
-          <Search />
+            <Search />
         </Col>
       </>
     );

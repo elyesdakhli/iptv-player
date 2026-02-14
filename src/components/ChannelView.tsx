@@ -1,12 +1,14 @@
-import { Stream, VodStream } from "../types/Types.ts";
-import { useContext, useEffect, useState } from "react";
-import { Button, Col, Row } from "react-bootstrap";
-import { SourceContext } from "../context/SourceContext.ts";
-import { ModeContext } from "../context/ModeContext.ts";
-import { VodDetailsView } from "./VodDetailsView.tsx";
+import {Stream, VodStream} from "../types/Types.ts";
+import {useContext, useEffect, useState} from "react";
+import {Button, Col, Row} from "react-bootstrap";
+import {SourceContext} from "../context/SourceContext.ts";
+import {ModeContext} from "../context/ModeContext.ts";
+import {VodDetailsView} from "./VodDetailsView.tsx";
 import ReactPlayer from "react-player";
-import CopyToClipboad from "./common/CopyToClipboad.tsx";
-import { ChannelEpg } from "./ChannelEpg.tsx";
+import CopyToClipboard from "./common/CopyToClipboard.tsx";
+import {ChannelEpg} from "./ChannelEpg.tsx";
+import {MyImage} from "./common/MyImage.tsx";
+import fallbackFilmImage from "../assets/film-play-transparant.png";
 
 type ChannelViewProps = {
   stream: Stream | VodStream | null;
@@ -18,20 +20,17 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
   const [streamUrl, setStreamUrl] = useState<string>("");
 
   function buildStreamUrl() {
-    if (!stream) throw new Error("Stream is not defined");
-
-    if (!source) throw new Error("Source is not defined");
-
     const streamType = mode === "FILMS" ? "movie" : "live";
     const streamExtension =
       mode === "FILMS" ? (stream as VodStream).containerExtension : "m3u8";
 
-    return `${source.url}/${streamType}/${source.username}/${source.password}/${stream.streamId}.${streamExtension}`;
+    return `${source!.url}/${streamType}/${source!.username}/${source!.password}/${stream!.streamId}.${streamExtension}`;
   }
 
   useEffect(() => {
     if (!source || !stream) return;
     setStreamUrl(buildStreamUrl());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source, stream]);
 
   if (!source || !stream?.streamId) return <></>;
@@ -48,12 +47,12 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
             </Col>
             <Col>
               <h4>
-                <img src={stream.streamIcon} alt={""} height={25} width={25} />{" "}
+                <MyImage url={stream.streamIcon} height={25} width={25} fallbackImage={fallbackFilmImage}/>
                 {stream.name}
               </h4>
             </Col>
             <Col>
-              <CopyToClipboad
+              <CopyToClipboard
                 textToCopy={streamUrl}
                 buttonLabel="Copy video link"
               />
@@ -73,14 +72,17 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
                     hlsOptions: {
                       maxBufferSize: 10 * 1000 * 1000, // Adjust buffer size if needed
                     },
-                  },
+                    attributes: {
+                      crossOrigin: "anonymous",
+                      }
+                  }
                 }}
-                onError={(error) => console.log(error)}
+                onError={(error) => console.error(error)}
               />
             </Col>
             <Col xs={12} sm={2} lg={3}>
               {mode === "TV" ? (
-                <ChannelEpg stream={stream} />
+                <ChannelEpg stream={stream} className="vertical-scroll"/>
               ) : (
                 <VodDetailsView stream={stream as VodStream} />
               )}

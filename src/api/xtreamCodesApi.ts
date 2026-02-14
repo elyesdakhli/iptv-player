@@ -7,6 +7,7 @@ import {
   VodStream,
 } from "../types/Types.ts";
 import axios from "axios";
+import {proxyPrefix} from "../utils/proxy.ts";
 
 //Api response types
 type CategoryResponse = {
@@ -49,13 +50,13 @@ const TV_SHORT_EPG_API_ACTION = "get_short_epg";
 const VOD_CATEGORY_STREAMS_API_ACTION = "get_vod_streams";
 const VOD_STREAM_INFO_API_ACTION = "get_vod_info";
 
-export const connect = async (source: Source): Promise<GlobalInfos | null> => {
-  if (!source?.url || !source?.username || !source?.password) return null;
+export const connect = async (source: Source | null): Promise<GlobalInfos | null> => {
+  if (!source || !source?.url || !source?.username || !source?.password) return null;
 
   try {
-    const apiResponse = await axios.get(
+    const apiResponse = await axios.get(proxyPrefix(
       `${source.url}/${PLAYER_API_PATH}?username=${source.username}&password=${source.password}`
-    );
+    ));
 
     const responseData = apiResponse.data;
     const responseUserInfo = responseData.user_info;
@@ -99,9 +100,9 @@ export const getCategories = async (
   try {
     const action =
       mode === "TV" ? TV_CATEGORIES_API_ACTION : VOD_CATEGORIES_API_ACTION;
-    const apiResponse = await axios.get(
+    const apiResponse = await axios.get(proxyPrefix(
       `${source.url}/${PLAYER_API_PATH}?username=${source.username}&password=${source.password}&action=${action}`
-    );
+    ));
 
     return Promise.resolve(
       apiResponse.data.map((cat: CategoryResponse) => ({
@@ -111,7 +112,7 @@ export const getCategories = async (
       }))
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -140,13 +141,13 @@ export const getStreams = async (
       category?.categoryId === "ALL"
         ? ""
         : "&category_id=" + category.categoryId;
-    const apiResponse = await axios.get(url);
+    const apiResponse = await axios.get(proxyPrefix(url));
 
     return mode === "TV"
       ? Promise.resolve(mapAllStreamResponseToStream(apiResponse.data))
       : Promise.resolve(mapAllVodStreamResponseToVodStream(apiResponse.data));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -168,8 +169,7 @@ export const getVodStreamInfo = async (
   streamId: string
 ): Promise<VodStreamInfo> => {
   try {
-    const url =
-      source.url +
+    const url =  source.url +
       "/" +
       PLAYER_API_PATH +
       "?username=" +
@@ -180,7 +180,7 @@ export const getVodStreamInfo = async (
       VOD_STREAM_INFO_API_ACTION +
       "&vod_id=" +
       streamId;
-    const apiResponse = await axios.get(url);
+    const apiResponse = await axios.get(proxyPrefix(url));
     const vodResponseInfo = apiResponse.data.info;
 
     return Promise.resolve({
@@ -195,7 +195,7 @@ export const getVodStreamInfo = async (
       duration: vodResponseInfo.duration,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -220,8 +220,7 @@ export const getEpg = async (
 ): Promise<ShortEpg[]> => {
   try {
     //action=get_short_epg&stream_id=507471
-    const url =
-      source.url +
+    const url = source.url +
       "/" +
       PLAYER_API_PATH +
       "?username=" +
@@ -232,12 +231,12 @@ export const getEpg = async (
       TV_SHORT_EPG_API_ACTION +
       "&stream_id=" +
       streamId;
-    const apiResponse = await axios.get(url);
+    const apiResponse = await axios.get(proxyPrefix(url));
     const epgListings = apiResponse.data.epg_listings;
 
     return Promise.resolve(mapAllEpgListings(epgListings));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -293,7 +292,7 @@ const mapStreamResponseToStream = (stream: StreamResponse): Stream => {
     epgChannelId: stream.epg_channel_id,
     added: stream.added ? Number.parseInt(stream.added) : 0,
     isAdult: stream.is_adult,
-    categoryId: stream.category_id ? Number.parseInt(stream.category_id) : 0,
+    categoryId: stream.category_id || "",
     categoryIds: stream.category_ids,
     customSid: stream.custom_sid,
     tvArchive: stream.tv_archive,

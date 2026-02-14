@@ -1,7 +1,7 @@
 .vertical-scroll {
-    overflow: auto; /* Horizontal scroll */
-    height: 100%;
+    overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
+    height:100vh!important;
     /*scrollbar-width: thin!* Smooth scroll on mobile *!*/
 }
 

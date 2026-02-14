@@ -1,11 +1,9 @@
 import {
-  forwardRef,
-  Ref,
-  useContext,
-  useEffect,
-  useImperativeHandle,
-  useRef,
-  useState,
+    memo,
+    useContext,
+    useEffect,
+    useRef,
+    useState,
 } from "react";
 import { Category } from "../types/Types.ts";
 import { Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
@@ -21,10 +19,7 @@ import { SearchBar, SearchBarRef } from "./common/SearchBar.tsx";
 
 export type CategoryViewProps = {
   onSelect: (category: Category) => void;
-};
-
-export type CategoriesRef = {
-  handleClearData: () => void;
+  clearCacheSignal: number;
 };
 
 const ALL_CHANNELS_CAT: Category = {
@@ -33,36 +28,32 @@ const ALL_CHANNELS_CAT: Category = {
   parentId: "",
 };
 
-export const CategoriesView = forwardRef(
-  ({ onSelect }: CategoryViewProps, ref: Ref<CategoriesRef>) => {
+export const CategoriesView = memo(({ onSelect, clearCacheSignal }: CategoryViewProps) => {
     const {
       categories,
       loading,
       apiError,
-      reFetchCategories: reFetchCategories,
+      reFetchCategories,
     } = useFetchCategories(ALL_CHANNELS_CAT);
     const { filteredCategories, search, clearFilter } =
       useFilterCategories(categories);
 
     const searchBarRef = useRef<SearchBarRef>(null);
-    //Contexts
     const source = useContext(SourceContext);
     const mode = useContext(ModeContext);
 
-    const handleClearData = () => {
+    useEffect(() => {
       if (!source) return;
       storageApi.cleanCategories(source.name, mode);
-      reFetchCategories(mode);
-    };
-
-    useImperativeHandle(ref, () => ({
-      handleClearData,
-    }));
+      reFetchCategories();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [clearCacheSignal, source, mode]);
 
     useEffect(() => {
-      reFetchCategories(mode);
+      reFetchCategories();
       clearFilter();
       searchBarRef.current?.resetSearch();
+      // eslint-disable-next-line react-hooks/exhaustive-deps
     }, [mode]);
 
     if (!categories) return <></>;
@@ -73,7 +64,7 @@ export const CategoriesView = forwardRef(
           <LoadingSpinner visible={loading} />
           <ErrorAlert error={apiError} />
         </Row>
-        <Row className="p-10 mb-2 flex-box">
+        <Row className="p-10 mb-2">
           <Col xs={2}>
             <h4>Categories</h4>
           </Col>
@@ -88,8 +79,7 @@ export const CategoriesView = forwardRef(
         </Row>
       </div>
     );
-  }
-);
+});
 
 const CategoryItems = ({
   categories,
