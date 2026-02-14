@@ -29,7 +29,8 @@ export const VodDetailsView = ({ stream }: { stream: VodStream }) => {
         setVodInfo(vodInfo);
       })
       .finally(() => setLoading(false));
-  }, [stream]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [source, stream]);
 
   return (
     mode === "FILMS" &&

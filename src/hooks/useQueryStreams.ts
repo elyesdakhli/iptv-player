@@ -24,6 +24,6 @@ export const useQueryStreams = ({ category}: UseQueryStreamsProps) => {
         queryKey: ['streams', source, mode, category],
         queryFn: fetchStreams,
     });
-    //console.log("useQueryStreams: mode: ", mode, " category: ", category?.categoryName, " source: ", source?.name);
+
     return {streams: data||[], loading: isPending, apiError: error, fetchStreams: refetch};
 };

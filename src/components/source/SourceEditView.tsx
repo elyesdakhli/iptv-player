@@ -30,10 +30,9 @@ export const SourceEditView = ({source, isEdit, sources, onSave, onCancel, onDel
         if (!form.checkValidity()) {
             return;
         }
-        //to check
         setValidated(true);
-        const sourcesWithSameName = sources?.filter( (src) => src.name === formData.name).length;
-        if(sourcesWithSameName && sourcesWithSameName > 0){
+        const duplicateName = sources?.some((src) => src.name === formData.name && src.name !== source.name);
+        if(duplicateName){
             setCreateSourceError('A source with this name already exists');
             return;
         }

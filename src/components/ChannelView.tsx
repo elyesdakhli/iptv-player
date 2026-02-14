@@ -5,7 +5,7 @@ import {SourceContext} from "../context/SourceContext.ts";
 import {ModeContext} from "../context/ModeContext.ts";
 import {VodDetailsView} from "./VodDetailsView.tsx";
 import ReactPlayer from "react-player";
-import CopyToClipboad from "./common/CopyToClipboad.tsx";
+import CopyToClipboard from "./common/CopyToClipboard.tsx";
 import {ChannelEpg} from "./ChannelEpg.tsx";
 import {MyImage} from "./common/MyImage.tsx";
 import fallbackFilmImage from "../assets/film-play-transparant.png";
@@ -20,20 +20,17 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
   const [streamUrl, setStreamUrl] = useState<string>("");
 
   function buildStreamUrl() {
-    if (!stream) throw new Error("Stream is not defined");
-
-    if (!source) throw new Error("Source is not defined");
-
     const streamType = mode === "FILMS" ? "movie" : "live";
     const streamExtension =
       mode === "FILMS" ? (stream as VodStream).containerExtension : "m3u8";
 
-    return `${source.url}/${streamType}/${source.username}/${source.password}/${stream.streamId}.${streamExtension}`;
+    return `${source!.url}/${streamType}/${source!.username}/${source!.password}/${stream!.streamId}.${streamExtension}`;
   }
 
   useEffect(() => {
     if (!source || !stream) return;
     setStreamUrl(buildStreamUrl());
+    // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [source, stream]);
 
   if (!source || !stream?.streamId) return <></>;
@@ -55,7 +52,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
               </h4>
             </Col>
             <Col>
-              <CopyToClipboad
+              <CopyToClipboard
                 textToCopy={streamUrl}
                 buttonLabel="Copy video link"
               />
@@ -80,7 +77,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
                       }
                   }
                 }}
-                onError={(error) => console.log(error)}
+                onError={(error) => console.error(error)}
               />
             </Col>
             <Col xs={12} sm={2} lg={3}>

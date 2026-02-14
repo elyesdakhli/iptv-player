@@ -112,7 +112,7 @@ export const getCategories = async (
       }))
     );
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -147,7 +147,7 @@ export const getStreams = async (
       ? Promise.resolve(mapAllStreamResponseToStream(apiResponse.data))
       : Promise.resolve(mapAllVodStreamResponseToVodStream(apiResponse.data));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -195,7 +195,7 @@ export const getVodStreamInfo = async (
       duration: vodResponseInfo.duration,
     });
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -236,7 +236,7 @@ export const getEpg = async (
 
     return Promise.resolve(mapAllEpgListings(epgListings));
   } catch (error) {
-    console.log(error);
+    console.error(error);
     return Promise.reject(error);
   }
 };
@@ -292,7 +292,7 @@ const mapStreamResponseToStream = (stream: StreamResponse): Stream => {
     epgChannelId: stream.epg_channel_id,
     added: stream.added ? Number.parseInt(stream.added) : 0,
     isAdult: stream.is_adult,
-    categoryId: stream.category_id ? Number.parseInt(stream.category_id) : 0,
+    categoryId: stream.category_id || "",
     categoryIds: stream.category_ids,
     customSid: stream.custom_sid,
     tvArchive: stream.tv_archive,

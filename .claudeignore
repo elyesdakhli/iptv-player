@@ -1,0 +1,45 @@
+# Dépendances (Le plus important !)
+node_modules/
+vendor/
+.venv/
+env/
+__pycache__/
+
+# Dossiers de Build et Sortie
+dist/
+build/
+out/
+.next/
+.nuxt/
+bin/
+obj/
+
+# Logs et Données temporaires
+*.log
+logs/
+tmp/
+temp/
+.cache/
+
+# Médias et assets lourds (Claude ne peut pas les "lire" textuellement)
+*.png
+*.jpg
+*.jpeg
+*.gif
+*.svg
+*.mp4
+*.pdf
+*.zip
+*.tar.gz
+
+# Fichiers de configuration d'IDE et OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Données sensibles (Sécurité)
+.env
+.env.*
+*.pem
+*.key

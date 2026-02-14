@@ -1,18 +1,19 @@
 import {Button, Col} from "react-bootstrap";
 import {connect} from "../api/xtreamCodesApi.ts";
 import {SourcesManager} from "./source/SourcesManager.tsx";
-import {useActiveSource} from "../hooks/useActiveSource.ts";
 import {useQuery} from "@tanstack/react-query";
 import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
 import {ErrorAlert} from "./common/ErrorAlert.tsx";
+import {useContext} from "react";
+import {SourceContext} from "../context/SourceContext.ts";
 
 export type SourceViewProps = {
-    onClearData: (() => void) | undefined;
-    onSourcesChanged: (() => void) | undefined;
+    onClearData: () => void;
+    onSourcesChanged: () => void;
 }
 
 function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
-    const { activeSource } = useActiveSource();
+    const activeSource = useContext(SourceContext);
 
     const {data, isPending, isError} = useQuery({
         queryKey: ['globalInfos', activeSource],

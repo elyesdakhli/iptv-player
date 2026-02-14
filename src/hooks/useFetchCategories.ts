@@ -8,10 +8,10 @@ import {ModeContext} from "../context/ModeContext.ts";
 export const useFetchCategories = (...staticCategories: Category[]) => {
     const source = useContext(SourceContext);
     const mode = useContext(ModeContext);
-    console.log('useFetchCategories rendered for mode ' + mode);
+
     const [categories, setCategories] = useState<Category[]>([]);
     const [loading, setLoading] = useState(true);
-    const [apiError, setApiError] = useState<Error|null>(Error);
+    const [apiError, setApiError] = useState<Error|null>(null);
 
     const appendCategories = (categories: Category[], append: Category[]): Category[] => {
         return [...categories, ...append];
@@ -26,7 +26,6 @@ export const useFetchCategories = (...staticCategories: Category[]) => {
             .then(categoriesData => {
                 setCategories(appendCategories(staticCategories, categoriesData));
                 storageApi.saveCategories(source.name, mode, categoriesData);
-                console.log("Categories loaded from api.");
             })
             .catch( (error) => setApiError(error))
             .finally( () => setLoading(false));
@@ -56,12 +55,13 @@ export const useFetchCategories = (...staticCategories: Category[]) => {
             return;
         //Getting categories from api
         fetchFromApi();
-    }, [mode]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode, source]);
 
     useEffect(() => {
-        console.log("useFetchCategories useEffect called for source " + source?.name + ' and mode ' + mode);
         doFetch();
-    }, [source, mode, doFetch]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [source, mode]);
 
     return {categories, loading, apiError, reFetchCategories: doFetch};
 }

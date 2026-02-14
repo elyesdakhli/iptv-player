@@ -1,14 +1,10 @@
 import {AppMode} from "../types/Types.ts";
 import {Dropdown, DropdownButton} from "react-bootstrap";
-import {useState} from "react";
 
-export const AppModeSelector = ({onSelect}: {onSelect: (mode: AppMode) => void}) => {
-    const [mode, setMode] = useState('TV');
-
+export const AppModeSelector = ({mode, onSelect}: {mode: AppMode; onSelect: (mode: AppMode) => void}) => {
     return (
-        <DropdownButton title={mode ||"Mode" } onSelect={(event) => {
-                setMode(event as AppMode);
-                onSelect(event as AppMode)
+        <DropdownButton title={mode || "Mode"} onSelect={(event) => {
+                onSelect(event as AppMode);
               }
             } variant="secondary">
             <Dropdown.Item eventKey="TV">TV</Dropdown.Item>
