@@ -5,8 +5,7 @@ export type Source = {
     username: string,
     password: string,
     type: 'XTREAM_CODES' | 'PLAYLIST',
-    active: boolean,
-    activeSource?: Source | null
+    active: boolean
 }
 
 export type Category = {
@@ -24,7 +23,7 @@ export type Stream = {
     epgChannelId: string;
     added: number,
     isAdult: number,
-    categoryId: number,
+    categoryId: string,
     categoryIds: number[],
     customSid: string,
     tvArchive: number,

@@ -1,5 +1,5 @@
 import { Category } from "../types/Types.ts";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 
 export const useFilterCategories = (categories: Category[]) => {
   const [filterValue, setFilterValue] = useState("");
@@ -17,14 +17,14 @@ export const useFilterCategories = (categories: Category[]) => {
         );
   };
 
-  function search(searchValue: string) {
+  const search = useCallback((searchValue: string) => {
     if (!categories) return;
     setFilterValue(searchValue);
-  }
+  }, [categories]);
 
-  const clearFilter = () => {
+  const clearFilter = useCallback(() => {
     setFilterValue("");
-  };
+  }, []);
 
   useEffect(() => {
     setFilteredCategories(filterCategories(filterValue, categories));

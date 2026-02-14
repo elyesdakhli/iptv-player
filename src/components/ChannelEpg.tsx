@@ -24,7 +24,8 @@ export const ChannelEpg = ({ stream, className }: { stream: Stream, className?: 
             setShortEpgs(shortEpgList);
         })
         .finally(() => setLoading(false));
-    }, [stream]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [source, stream]);
 
   return (
     <div className={className}>

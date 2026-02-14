@@ -33,6 +33,15 @@ export const saveSource = (source: Source) => {
     save(SOURCE_STORAGE_KEY, [...sources, source]);
 }
 
+export const updateSource = (originalName: string, source: Source) => {
+    let sources = get<Source[]>(SOURCE_STORAGE_KEY) || [];
+    if(source.active){
+        sources = sources.map((src) => ({...src, active: false}));
+    }
+    sources = sources.map((src) => src.name === originalName ? source : src);
+    save(SOURCE_STORAGE_KEY, sources);
+}
+
 export const getActiveSource = (): Source | null => {
     const sources = get<Source[]>(SOURCE_STORAGE_KEY);
     if(!sources)
@@ -68,6 +77,7 @@ export const storageApi = {
     saveCategories,
     getActiveSource,
     saveSource,
+    updateSource,
     getSources,
     cleanCategories,
     deleteSource

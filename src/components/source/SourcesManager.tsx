@@ -1,8 +1,8 @@
 import {Button, Modal} from "react-bootstrap";
-import {useRef, useState} from "react";
+import {useState} from "react";
 import {storageApi} from "../../api/storageApi.ts";
 import {Source} from "../../types/Types.ts";
-import {SourceItems, SourceItemsRef} from "./SourceItems.tsx";
+import {SourceItems} from "./SourceItems.tsx";
 import {SourceEditView} from "./SourceEditView.tsx";
 
 
@@ -17,7 +17,7 @@ const EMPTY_SOURCE: Source = {
 
 const EMPTY_SOURCES: Source[] = [];
 type SourcesManagerProps = {
-    onSourcesChanged: (() => void) | undefined
+    onSourcesChanged: () => void;
 }
 export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
     const loadSourcesFromCache= () => storageApi.getSources() || EMPTY_SOURCES;
@@ -26,8 +26,7 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
     const [sources, setSources] = useState<Source[]>(loadSourcesFromCache());
     const [showModal, setShowModal] = useState(false);
     const [showSourceForm, setShowSourceForm] = useState(false);
-    const sourceItemsRef = useRef<SourceItemsRef>(null);
-
+    const [selectedSourceIndex, setSelectedSourceIndex] = useState(-1);
 
     const [editMode, setEditMode] = useState(false);
 
@@ -40,18 +39,19 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
         setShowModal(false);
     }
 
-    const handleSaveSource = (source: Source) => {
-        if(sources.length ===0){
-            source.active = true;
+    const handleSaveSource = (savedSource: Source) => {
+        if(sources.length === 0){
+            savedSource.active = true;
         }
-        sources.push(source);
-        storageApi.saveSource(source);
+        if(editMode){
+            storageApi.updateSource(source.name, savedSource);
+        } else {
+            storageApi.saveSource(savedSource);
+        }
         setSource(EMPTY_SOURCE);
-
         setShowSourceForm(false);
         setSources(loadSourcesFromCache());
-        if(onSourcesChanged)
-            onSourcesChanged();
+        onSourcesChanged();
     }
 
     const handleCancelEdit = () => {
@@ -61,14 +61,14 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
         setSources(storageApi.deleteSource(source.name));
         setSource(EMPTY_SOURCE);
         setShowSourceForm(false);
-        if(onSourcesChanged)
-            onSourcesChanged();
+        onSourcesChanged();
     }
 
-    const handleSelectSource = (source: Source) => {
+    const handleSelectSource = (source: Source, index: number) => {
         setEditMode(true);
         setShowSourceForm(true);
         setSource(source);
+        setSelectedSourceIndex(index);
     }
 
     return <>
@@ -83,7 +83,7 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
             <Modal.Body>
                 <div className="row">
                     <div className="col-md-3">
-                        <SourceItems sources={sources} onSelect={handleSelectSource} ref={sourceItemsRef}/>
+                        <SourceItems sources={sources} selectedIndex={selectedSourceIndex} onSelect={handleSelectSource}/>
                     </div>
                     {showSourceForm && (
                         <div className="col-md-9">
@@ -100,7 +100,7 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
                     setShowSourceForm(true);
                     setEditMode(false);
                     setSource(EMPTY_SOURCE);
-                    sourceItemsRef.current?.clearSelection();
+                    setSelectedSourceIndex(-1);
                 }
                 }>New</Button>
                 <Button variant="primary" onClick={handleClose}>
@@ -110,6 +110,3 @@ export const SourcesManager = ({onSourcesChanged}: SourcesManagerProps) => {
         </Modal>
     </>
 }
-
-
-

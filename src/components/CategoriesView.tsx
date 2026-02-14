@@ -1,9 +1,7 @@
 import {
-    forwardRef, memo,
-    Ref, useCallback,
+    memo,
     useContext,
     useEffect,
-    useImperativeHandle,
     useRef,
     useState,
 } from "react";
@@ -21,10 +19,7 @@ import { SearchBar, SearchBarRef } from "./common/SearchBar.tsx";
 
 export type CategoryViewProps = {
   onSelect: (category: Category) => void;
-};
-
-export type CategoriesRef = {
-  handleClearData: () => void;
+  clearCacheSignal: number;
 };
 
 const ALL_CHANNELS_CAT: Category = {
@@ -33,39 +28,32 @@ const ALL_CHANNELS_CAT: Category = {
   parentId: "",
 };
 
-export const CategoriesView = memo(forwardRef(
-  ({ onSelect }: CategoryViewProps, ref: Ref<CategoriesRef>) => {
+export const CategoriesView = memo(({ onSelect, clearCacheSignal }: CategoryViewProps) => {
     const {
       categories,
       loading,
       apiError,
-      reFetchCategories: reFetchCategories,
+      reFetchCategories,
     } = useFetchCategories(ALL_CHANNELS_CAT);
     const { filteredCategories, search, clearFilter } =
       useFilterCategories(categories);
 
     const searchBarRef = useRef<SearchBarRef>(null);
-    //Contexts
     const source = useContext(SourceContext);
     const mode = useContext(ModeContext);
 
-    const handleClearData = useCallback(() => {
+    useEffect(() => {
       if (!source) return;
       storageApi.cleanCategories(source.name, mode);
       reFetchCategories();
-    }, [source, mode]);
-
-    useImperativeHandle(ref, () => ({
-      handleClearData,
-    }));
+    }, [clearCacheSignal, source, mode, reFetchCategories]);
 
     useEffect(() => {
       reFetchCategories();
       clearFilter();
       searchBarRef.current?.resetSearch();
-    }, [mode]);
+    }, [mode, reFetchCategories, clearFilter]);
 
-    console.log("CategoriesView rendered");
     if (!categories) return <></>;
 
     return (
@@ -89,8 +77,7 @@ export const CategoriesView = memo(forwardRef(
         </Row>
       </div>
     );
-  }
-));
+});
 
 const CategoryItems = ({
   categories,

@@ -1,16 +1,15 @@
 import {Category, Stream} from "../types/Types.ts";
-import {memo, useCallback, useContext, useEffect, useRef, useState} from "react";
+import {memo, useCallback, useContext, useEffect, useMemo, useRef, useState} from "react";
 import {Card, Col, Row} from "react-bootstrap";
 
 import {ModeContext} from "../context/ModeContext.ts";
 import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
 import {ErrorAlert} from "./common/ErrorAlert.tsx";
-import {SearchBar, SearchBarRef} from "./common/SearchBar.tsx";
+import {SearchBar} from "./common/SearchBar.tsx";
 import fallbackFilmImage from "../assets/film-play-transparant.png";
 import {MyImage} from "./common/MyImage.tsx";
 import {Tv} from "react-bootstrap-icons";
 import {useQueryStreams} from "../hooks/useQueryStreams.ts";
-import {isEqual} from 'lodash';
 
 type StreamsViewProps = {
   category: Category | null;
@@ -18,34 +17,19 @@ type StreamsViewProps = {
 };
 
 export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
-
-
   const { loading, apiError, streams } = useQueryStreams({ category});
-  const searchBarRef = useRef<SearchBarRef>(null);
-  console.log("StreamsView rendered: category: ", category?.categoryName, ' loading: ', loading, ' apiError: ', apiError, ' streams: ', streams?.length);
+  const [searchValue, setSearchValue] = useState("");
 
-  const [displayStreams, setDisplayStream] = useState<Stream[]>([]);
+  const filteredStreams = useMemo(() => {
+    if (!searchValue) return streams;
+    return streams.filter((stream) =>
+      stream.name.toLowerCase().includes(searchValue.toLowerCase())
+    );
+  }, [streams, searchValue]);
 
   useEffect(() => {
-    if(!isEqual(streams, displayStreams)){
-      setDisplayStream(streams);
-    }
-  }, [streams]);
-
-  const filterStreams = useCallback((searchValue: string) => {
-    return !searchValue
-      ? streams
-      : streams.filter((stream) =>
-          stream.name.toLowerCase().includes(searchValue.toLowerCase())
-        );
-  }, [streams]);
-
-  const handleSearch = useCallback((searchValue: string) => {
-    console.log("handleSearch: ", searchValue);
-    if (!streams)
-      return;
-    setDisplayStream(filterStreams(searchValue));
-  }, [streams]);
+    setSearchValue("");
+  }, [category]);
 
   if (!category) return <></>;
   return (
@@ -58,10 +42,10 @@ export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
         <Col xs={2}>
           <h4>Channels</h4>
         </Col>
-        <SearchBar ref={searchBarRef} onSearch={handleSearch} searchPlaceHolder="Search channel" />
+        <SearchBar onSearch={setSearchValue} searchPlaceHolder="Search channel" />
       </div>
       <Row className="g-4 mt-3 vertical-scroll">
-        <StreamItems streams={displayStreams} onSelect={onSelect} />
+        <StreamItems streams={filteredStreams} onSelect={onSelect} />
       </Row>
     </div>
   );
