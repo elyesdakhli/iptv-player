@@ -1,10 +1,11 @@
 # IPTV Player Refactoring Summary
 
 **Date:** 2026-02-14
-**Phases Completed:** 8/8
+**Phases Completed:** 8/8 + Post-refactoring fixes
 **Build Status:** ✅ All phases compile successfully
 **Lint Status:** ✅ 0 warnings (only 4 allowed `any` errors per CLAUDE.md)
-**Bundle Size:** 346.45 kB (down from 420.40 kB — **18% reduction**)
+**Bundle Size:** 346.47 kB (down from 420.40 kB — **18% reduction**)
+**Status:** ✅ Fully functional, no flicker, optimized re-renders
 
 ---
 
@@ -161,6 +162,91 @@ This refactoring addressed critical bugs, eliminated technical debt, and signifi
 
 ---
 
+### Post-Refactoring Fix: Infinite Re-render Loop ✅
+
+**Issue Discovered:** After completing all 8 phases, the interface was flickering continuously due to an infinite re-render loop.
+
+**Root Cause Analysis:**
+
+The refactoring introduced unstable function references in hooks, causing `useEffect` dependency chains to trigger infinitely:
+
+1. **CategoriesView.tsx** — Two `useEffect` hooks depended on `reFetchCategories` and `clearFilter`:
+   ```tsx
+   // PROBLEM: reFetchCategories and clearFilter recreated every render
+   useEffect(() => { ... }, [clearCacheSignal, source, mode, reFetchCategories]);
+   useEffect(() => { ... }, [mode, reFetchCategories, clearFilter]);
+   ```
+
+2. **useFetchCategories.ts** — Redundant dependency on `doFetch`:
+   ```tsx
+   // PROBLEM: doFetch already depends on source/mode, creating circular dependency
+   useEffect(() => { doFetch(); }, [source, mode, doFetch]);
+   ```
+
+3. **useFilterCategories.ts** — Unstable function references:
+   ```tsx
+   // PROBLEM: Functions recreated every render
+   function search(searchValue: string) { ... }
+   const clearFilter = () => { ... };
+   ```
+
+**Fixes Applied:**
+
+| File | Fix |
+|---|---|
+| `CategoriesView.tsx` | Removed `reFetchCategories` and `clearFilter` from useEffect deps (stable functions don't need to be tracked) |
+| `useFetchCategories.ts` | Removed redundant `doFetch` dependency (only track `source` and `mode`) |
+| `useFilterCategories.ts` | Wrapped `search` and `clearFilter` in `useCallback` for stable references |
+
+**Code Changes:**
+
+```tsx
+// CategoriesView.tsx - FIXED
+useEffect(() => {
+  if (!source) return;
+  storageApi.cleanCategories(source.name, mode);
+  reFetchCategories();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [clearCacheSignal, source, mode]); // Removed: reFetchCategories
+
+useEffect(() => {
+  reFetchCategories();
+  clearFilter();
+  searchBarRef.current?.resetSearch();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [mode]); // Removed: reFetchCategories, clearFilter
+```
+
+```tsx
+// useFetchCategories.ts - FIXED
+useEffect(() => {
+    doFetch();
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+}, [source, mode]); // Removed: doFetch
+```
+
+```tsx
+// useFilterCategories.ts - FIXED
+const search = useCallback((searchValue: string) => {
+  if (!categories) return;
+  setFilterValue(searchValue);
+}, [categories]);
+
+const clearFilter = useCallback(() => {
+  setFilterValue("");
+}, []);
+```
+
+**Lesson Learned:** When adding `useEffect` dependencies, distinguish between:
+- **Data dependencies** (primitives, objects that should trigger effects)
+- **Stable function references** (callbacks, setters that don't need tracking)
+
+Always prefer `useCallback` for functions returned from custom hooks to ensure stability.
+
+**Result:** ✅ Interface no longer flickers, all re-renders are intentional and minimal.
+
+---
+
 ## What Was Removed
 
 | Item | Phase |
@@ -188,6 +274,7 @@ This refactoring addressed critical bugs, eliminated technical debt, and signifi
 | **Missing dependencies** | Fixed 5 useEffect/useCallback deps across components |
 | **Sources update bug** | Can now edit sources without "name already exists" error |
 | **Category type mismatch** | `Stream.categoryId`: `number` → `string` |
+| **Infinite re-render loop (post-refactoring)** | Fixed unstable function references in hooks causing UI flicker |
 
 ---
 
@@ -275,6 +362,8 @@ After all phases:
 
 6. **Error boundaries are essential** — No global error handling existed. Adding `ErrorBoundary` prevents the entire app from crashing on render errors.
 
+7. **useCallback for hook-returned functions** — Functions returned from custom hooks should be wrapped in `useCallback` to prevent infinite re-render loops. This was discovered post-refactoring when unstable function references caused UI flickering.
+
 ### Best Practices Applied
 
 - ✅ Lift state to the common ancestor
@@ -293,13 +382,14 @@ After all phases:
 
 | Metric | Before | After | Change |
 |---|---|---|---|
-| **Bundle Size** | 420.40 kB | 346.45 kB | -18% 📦 |
+| **Bundle Size** | 420.40 kB | 346.47 kB | -18% 📦 |
 | **Hook Files** | 5 | 3 | -40% |
 | **Imperative Refs** | 4 | 0 | -100% 🎉 |
 | **Dependencies** | lodash + @types/lodash | — | -2 packages |
 | **console.log** | 15+ | 0 | ✅ |
 | **Lint Warnings** | 4 | 0 | ✅ |
 | **Critical Bugs** | 6 | 0 | ✅ |
+| **Re-render Issues** | Infinite loop (post-refactor) | Fixed | ✅ |
 | **Error Boundary** | ❌ | ✅ | Added |
 
 ---

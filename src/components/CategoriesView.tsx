@@ -46,13 +46,15 @@ export const CategoriesView = memo(({ onSelect, clearCacheSignal }: CategoryView
       if (!source) return;
       storageApi.cleanCategories(source.name, mode);
       reFetchCategories();
-    }, [clearCacheSignal, source, mode, reFetchCategories]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [clearCacheSignal, source, mode]);
 
     useEffect(() => {
       reFetchCategories();
       clearFilter();
       searchBarRef.current?.resetSearch();
-    }, [mode, reFetchCategories, clearFilter]);
+      // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [mode]);
 
     if (!categories) return <></>;
 

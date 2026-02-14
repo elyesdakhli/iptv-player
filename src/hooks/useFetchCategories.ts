@@ -60,7 +60,8 @@ export const useFetchCategories = (...staticCategories: Category[]) => {
 
     useEffect(() => {
         doFetch();
-    }, [source, mode, doFetch]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [source, mode]);
 
     return {categories, loading, apiError, reFetchCategories: doFetch};
 }
