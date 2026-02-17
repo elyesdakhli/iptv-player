@@ -1,18 +1,12 @@
-import {Button, Col} from "react-bootstrap";
+import {Col} from "react-bootstrap";
 import {connect} from "../api/xtreamCodesApi.ts";
-import {SourcesManager} from "./source/SourcesManager.tsx";
 import {useQuery} from "@tanstack/react-query";
 import {LoadingSpinner} from "./common/LoadingSpinner.tsx";
 import {ErrorAlert} from "./common/ErrorAlert.tsx";
 import {useContext} from "react";
 import {SourceContext} from "../context/SourceContext.ts";
 
-export type SourceViewProps = {
-    onClearData: () => void;
-    onSourcesChanged: () => void;
-}
-
-function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
+function SourcesView () {
     const activeSource = useContext(SourceContext);
 
     const {data, isPending, isError} = useQuery({
@@ -33,27 +27,15 @@ function SourcesView ({ onClearData, onSourcesChanged}: SourceViewProps) {
             <>
             {activeSource && (
                 <Col><strong>Source: </strong>{activeSource.name}</Col>
-
             )}
             {data &&
                 <>
                     <Col><strong>Status: </strong><span className=
                                                          {data?.userInfo.status === 'Active' ?
                                                              "text-success" : 'text-warning'}>{data?.userInfo.status}</span></Col>
-                    <Col><strong>Expires on: </strong>{formatDate(data?.userInfo.expDate) }</Col>
+                    <Col><strong>Expires on: </strong>{formatDate(data?.userInfo.expDate)}</Col>
                 </>
             }
-            <Col>
-                <span className="me-1">
-                    <SourcesManager onSourcesChanged={onSourcesChanged}/>
-                </span>
-            </Col>
-            <Col>
-                {activeSource && (
-                    <Button variant="secondary" onClick={onClearData} style={{ cursor: "pointer" }}>Clear & Reload</Button>
-                )}
-            </Col>
-
         </>
         </>)
 }
