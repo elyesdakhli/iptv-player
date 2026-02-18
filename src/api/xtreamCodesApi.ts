@@ -6,8 +6,7 @@ import {
   Stream,
   VodStream,
 } from "../types/Types.ts";
-import axios from "axios";
-import {proxyPrefix} from "../utils/proxy.ts";
+import { CapacitorHttp } from "@capacitor/core";
 
 //Api response types
 type CategoryResponse = {
@@ -50,17 +49,24 @@ const TV_SHORT_EPG_API_ACTION = "get_short_epg";
 const VOD_CATEGORY_STREAMS_API_ACTION = "get_vod_streams";
 const VOD_STREAM_INFO_API_ACTION = "get_vod_info";
 
+const get = async (url: string) => {
+  const response = await CapacitorHttp.get({ url });
+  if (response.status < 200 || response.status >= 300) {
+    throw new Error(`HTTP ${response.status}`);
+  }
+  return response.data;
+};
+
 export const connect = async (source: Source | null): Promise<GlobalInfos | null> => {
   if (!source || !source?.url || !source?.username || !source?.password) return null;
 
   try {
-    const apiResponse = await axios.get(proxyPrefix(
+    const data = await get(
       `${source.url}/${PLAYER_API_PATH}?username=${source.username}&password=${source.password}`
-    ));
+    );
 
-    const responseData = apiResponse.data;
-    const responseUserInfo = responseData.user_info;
-    const responseServerInfo = responseData.server_info;
+    const responseUserInfo = data.user_info;
+    const responseServerInfo = data.server_info;
     return Promise.resolve({
       userInfo: {
         username: responseUserInfo.username,
@@ -100,12 +106,12 @@ export const getCategories = async (
   try {
     const action =
       mode === "TV" ? TV_CATEGORIES_API_ACTION : VOD_CATEGORIES_API_ACTION;
-    const apiResponse = await axios.get(proxyPrefix(
+    const data = await get(
       `${source.url}/${PLAYER_API_PATH}?username=${source.username}&password=${source.password}&action=${action}`
-    ));
+    );
 
     return Promise.resolve(
-      apiResponse.data.map((cat: CategoryResponse) => ({
+      data.map((cat: CategoryResponse) => ({
         categoryId: cat.category_id,
         categoryName: cat.category_name,
         parentId: cat.parent_id,
@@ -141,11 +147,11 @@ export const getStreams = async (
       category?.categoryId === "ALL"
         ? ""
         : "&category_id=" + category.categoryId;
-    const apiResponse = await axios.get(proxyPrefix(url));
+    const data = await get(url);
 
     return mode === "TV"
-      ? Promise.resolve(mapAllStreamResponseToStream(apiResponse.data))
-      : Promise.resolve(mapAllVodStreamResponseToVodStream(apiResponse.data));
+      ? Promise.resolve(mapAllStreamResponseToStream(data))
+      : Promise.resolve(mapAllVodStreamResponseToVodStream(data));
   } catch (error) {
     console.error(error);
     return Promise.reject(error);
@@ -180,8 +186,8 @@ export const getVodStreamInfo = async (
       VOD_STREAM_INFO_API_ACTION +
       "&vod_id=" +
       streamId;
-    const apiResponse = await axios.get(proxyPrefix(url));
-    const vodResponseInfo = apiResponse.data.info;
+    const data = await get(url);
+    const vodResponseInfo = data.info;
 
     return Promise.resolve({
       name: vodResponseInfo.name,
@@ -219,7 +225,6 @@ export const getEpg = async (
   streamId: number
 ): Promise<ShortEpg[]> => {
   try {
-    //action=get_short_epg&stream_id=507471
     const url = source.url +
       "/" +
       PLAYER_API_PATH +
@@ -231,8 +236,8 @@ export const getEpg = async (
       TV_SHORT_EPG_API_ACTION +
       "&stream_id=" +
       streamId;
-    const apiResponse = await axios.get(proxyPrefix(url));
-    const epgListings = apiResponse.data.epg_listings;
+    const data = await get(url);
+    const epgListings = data.epg_listings;
 
     return Promise.resolve(mapAllEpgListings(epgListings));
   } catch (error) {
