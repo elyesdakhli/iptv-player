@@ -8,7 +8,7 @@
     "build": "tsc -b && vite build",
     "lint": "eslint .",
     "preview": "vite preview",
-    "build:android": "BUILD_TARGET=android tsc -b && BUILD_TARGET=android vite build && npx cap sync android",
+    "build:android": "cross-env BUILD_TARGET=android tsc -b && cross-env BUILD_TARGET=android vite build --mode android && npx cap sync android",
     "android:open": "npx cap open android",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d dist"
@@ -33,6 +33,7 @@
     "@types/react": "^18.3.18",
     "@types/react-dom": "^18.3.5",
     "@vitejs/plugin-react": "^4.3.4",
+    "cross-env": "^10.1.0",
     "eslint": "^9.17.0",
     "eslint-plugin-react-hooks": "^5.0.0",
     "eslint-plugin-react-refresh": "^0.4.16",

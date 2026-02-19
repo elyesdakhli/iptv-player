@@ -6,7 +6,7 @@ import {
     useState,
 } from "react";
 import { Category } from "../types/Types.ts";
-import { Col, ListGroup, ListGroupItem, Row } from "react-bootstrap";
+import { ListGroup, ListGroupItem, Row } from "react-bootstrap";
 import { storageApi } from "../api/storageApi.ts";
 import "../css/categories.css";
 import { SourceContext } from "../context/SourceContext.ts";
@@ -64,10 +64,7 @@ export const CategoriesView = memo(({ onSelect, clearCacheSignal }: CategoryView
           <LoadingSpinner visible={loading} />
           <ErrorAlert error={apiError} />
         </Row>
-        <Row className="p-10 mb-2">
-          <Col xs={2}>
-            <h4>Categories</h4>
-          </Col>
+        <Row className="mb-2">
           <SearchBar
             ref={searchBarRef}
             searchPlaceHolder="Search category"

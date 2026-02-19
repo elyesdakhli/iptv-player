@@ -38,10 +38,7 @@ export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
         <LoadingSpinner visible={loading} />
         <ErrorAlert error={apiError} />
       </div>
-      <div className="row p-10 flex-box">
-        <Col xs={2}>
-          <h4>Channels</h4>
-        </Col>
+      <div className="row mb-2">
         <SearchBar onSearch={setSearchValue} searchPlaceHolder="Search channel" />
       </div>
       <Row className="g-4 mt-3 vertical-scroll">
@@ -121,7 +118,7 @@ const TvStreamCard = memo(({ stream, index, onSelect }: StreamCardProps) => {
   const [hoveredStreamInd, setHoveredStreamInd] = useState(-1);
 
   return (
-    <Col xs={12} sm={6} md={4} lg={3}>
+    <Col xs={6} sm={4} md={3} lg={3}>
       <Card
         className={`${
           hoveredStreamInd == index
@@ -132,13 +129,11 @@ const TvStreamCard = memo(({ stream, index, onSelect }: StreamCardProps) => {
         onMouseEnter={() => setHoveredStreamInd(index)}
         onMouseLeave={() => setHoveredStreamInd(-1)}
       >
-        <Card.Body>
-          <Card.Body>
-            <MyImage url={stream.streamIcon} height={25} width={25}>
-              <Tv />
-            </MyImage>
-            {stream.name}
-          </Card.Body>
+        <Card.Body className="d-flex align-items-center gap-2 py-2">
+          <MyImage url={stream.streamIcon} height={25} width={25}>
+            <Tv />
+          </MyImage>
+          <span className="text-truncate small">{stream.name}</span>
         </Card.Body>
       </Card>
     </Col>
@@ -154,11 +149,11 @@ const FilmStreamCard = memo(({
 }) => {
 
   return (
-    <Col xs={12} sm={6} md={4} lg={2}>
+    <Col xs={6} sm={4} md={3} lg={2}>
       <Card style={{ cursor: "pointer" }} onClick={() => onSelect(stream)}>
-        <MyImage url={stream.streamIcon} fallbackImage={fallbackFilmImage}/>
-        <Card.Body>
-          {stream.name}
+        <MyImage url={stream.streamIcon} fallbackImage={fallbackFilmImage} className="card-img-top"/>
+        <Card.Body className="py-2">
+          <span className="small text-truncate d-block">{stream.name}</span>
         </Card.Body>
       </Card>
     </Col>

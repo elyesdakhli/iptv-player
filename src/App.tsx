@@ -1,4 +1,3 @@
-import SourcesView from "./components/SourcesView.tsx";
 import {Button, Col, Form, Offcanvas, Row} from "react-bootstrap";
 import {HomeView} from "./components/HomeView.tsx";
 import {useCallback, useEffect, useState} from "react";
@@ -65,13 +64,6 @@ function App() {
     return (
         <ErrorBoundary>
             <div className="container-fluid">
-                <Row className="pt-2 px-2">
-                    <Col className="text-center"><h1>Iptvyk</h1></Col>
-                </Row>
-                <Row className="pb-2 px-2 align-items-center">
-                    <SourcesView />
-                </Row>
-
                 <Offcanvas show={showSettings} onHide={() => setShowSettings(false)} placement="end">
                     <Offcanvas.Header closeButton>
                         <Offcanvas.Title>Settings</Offcanvas.Title>
@@ -85,10 +77,14 @@ function App() {
                         )}
                     </Offcanvas.Body>
                 </Offcanvas>
-                <Row className="align-items-center mt-2 px-2">
-                    <Col xs="auto"><h4 className="mb-0">Mode</h4></Col>
-                    <Col><AppModeSelector mode={mode} onSelect={handleModeSelect}/></Col>
-                    <Col className="d-flex align-items-center justify-content-end gap-3">
+                <Row className="py-2 px-2 align-items-center">
+                    <Col xs="auto">
+                        <span className="fw-bold fs-5">Iptvyk</span>
+                    </Col>
+                    <Col>
+                        <AppModeSelector mode={mode} onSelect={handleModeSelect}/>
+                    </Col>
+                    <Col xs="auto" className="d-flex align-items-center gap-2">
                         <Form.Check
                             type="switch"
                             id="dark-mode-switch"
@@ -96,8 +92,8 @@ function App() {
                             checked={isDark}
                             onChange={handleToggleDark}
                         />
-                        <Button variant="outline-secondary" onClick={() => setShowSettings(true)}>
-                            <GearFill size={18} />
+                        <Button variant="outline-secondary" size="sm" onClick={() => setShowSettings(true)}>
+                            <GearFill size={16} />
                         </Button>
                     </Col>
                 </Row>

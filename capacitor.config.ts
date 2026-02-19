@@ -6,6 +6,7 @@ const config: CapacitorConfig = {
   webDir: 'dist',
   android: {
     allowMixedContent: true, // allows HTTP stream URLs to load in the WebView
+    edgeToEdge: true, // enables CSS env(safe-area-inset-*) on Android 15+
   },
 };
 
