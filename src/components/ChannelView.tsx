@@ -39,7 +39,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
     <>
       {source && stream?.streamId && (
         <>
-          <Row className="justify-content-center py-2">
+          <Row className="justify-content-center py-2 mx-0">
             <Col xs={12} sm={10} lg={8}>
               <div className="d-flex align-items-center gap-2">
                 <Button onClick={onCancelPlay} variant="secondary" size="sm">Back</Button>
@@ -51,7 +51,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
               </div>
             </Col>
           </Row>
-          <Row className="justify-content-center mt-3">
+          <Row className="justify-content-center mt-3 mx-0">
             <Col xs={12} sm={10} lg={8}>
               <ReactPlayer
                 url={streamUrl} // Supports HLS, DASH, etc.
