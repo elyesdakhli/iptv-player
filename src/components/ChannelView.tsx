@@ -39,23 +39,16 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
     <>
       {source && stream?.streamId && (
         <>
-          <Row className="justify-content-center g-2">
-            <Col xs={1}>
-              <Button onClick={onCancelPlay} variant="secondary">
-                Back
-              </Button>
-            </Col>
-            <Col>
-              <h4>
-                <MyImage url={stream.streamIcon} height={25} width={25} fallbackImage={fallbackFilmImage}/>
-                {stream.name}
-              </h4>
-            </Col>
-            <Col>
-              <CopyToClipboard
-                textToCopy={streamUrl}
-                buttonLabel="Copy video link"
-              />
+          <Row className="justify-content-center py-2">
+            <Col xs={12} sm={10} lg={8}>
+              <div className="d-flex align-items-center gap-2">
+                <Button onClick={onCancelPlay} variant="secondary" size="sm">Back</Button>
+                <div className="d-flex align-items-center gap-1 flex-grow-1 overflow-hidden">
+                  <MyImage url={stream.streamIcon} height={20} width={20} fallbackImage={fallbackFilmImage}/>
+                  <span className="fw-bold small text-truncate">{stream.name}</span>
+                </div>
+                <CopyToClipboard textToCopy={streamUrl} buttonLabel="Copy link" />
+              </div>
             </Col>
           </Row>
           <Row className="justify-content-center mt-3">
@@ -79,14 +72,13 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
                 }}
                 onError={(error) => console.error(error)}
               />
+              {mode === "FILMS" && <VodDetailsView stream={stream as VodStream} />}
             </Col>
-            <Col xs={12} sm={2} lg={3}>
-              {mode === "TV" ? (
+            {mode === "TV" && (
+              <Col xs={12} sm={2} lg={3}>
                 <ChannelEpg stream={stream} className="vertical-scroll"/>
-              ) : (
-                <VodDetailsView stream={stream as VodStream} />
-              )}
-            </Col>
+              </Col>
+            )}
           </Row>
         </>
       )}

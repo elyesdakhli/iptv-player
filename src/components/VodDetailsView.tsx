@@ -37,43 +37,29 @@ export const VodDetailsView = ({ stream }: { stream: VodStream }) => {
     vodInfo && (
       <>
         <LoadingSpinner visible={loading} />
-        {vodInfo && (
-          <Card>
-            <Card.Img
-              variant="top"
+        <Card className="mt-2" style={{ fontSize: '0.78rem' }}>
+          <div className="d-flex gap-2 p-2">
+            <img
               src={noImage ? fallBackImage : proxyPrefix(vodInfo.movieImage)}
               onError={() => setNoImage(true)}
+              style={{ width: 70, height: 100, objectFit: 'cover', borderRadius: 4, flexShrink: 0 }}
             />
-            <Card.Body>
-              <Card.Title>{stream.name}</Card.Title>
-              <Card.Text>
-                <strong>Genre:</strong> {vodInfo.genre}
-              </Card.Text>
-              <Card.Text>
-                <strong>Rating:</strong> {stream.rating}{" "}
-                <StarFill style={{ color: "gold" }} />
-              </Card.Text>
-              <Card.Text>
-                <strong>Director:</strong> {vodInfo.director}
-              </Card.Text>
-              <Card.Text>
-                <strong>Release Date:</strong> {vodInfo.releaseDate}{" "}
-              </Card.Text>
-              <Card.Text>
-                <strong>Country:</strong> {vodInfo.country || "-"}
-              </Card.Text>
-              <Card.Text>
-                <strong>Duration:</strong> {vodInfo.duration}
-              </Card.Text>
-              <Card.Text>
-                <strong>Description:</strong> {vodInfo.description}
-              </Card.Text>
-              <Card.Text>
-                <strong>Cast:</strong> {vodInfo.cast}
-              </Card.Text>
-            </Card.Body>
-          </Card>
-        )}
+            <div style={{ minWidth: 0 }}>
+              <div className="fw-semibold text-truncate mb-1">{stream.name}</div>
+              {vodInfo.genre && <div className="text-muted text-truncate">{vodInfo.genre}</div>}
+              <div><StarFill style={{ color: 'gold' }} size={10} /> {stream.rating}</div>
+              {vodInfo.releaseDate && <div>{vodInfo.releaseDate}</div>}
+              {vodInfo.duration && <div>{vodInfo.duration}</div>}
+              {vodInfo.country && <div>{vodInfo.country}</div>}
+              {vodInfo.director && <div className="text-truncate">Dir: {vodInfo.director}</div>}
+            </div>
+          </div>
+          {vodInfo.description && (
+            <div className="px-2 pb-2 text-muted" style={{ fontSize: '0.7rem', overflow: 'hidden', maxHeight: '4.5rem' }}>
+              {vodInfo.description}
+            </div>
+          )}
+        </Card>
       </>
     )
   );
