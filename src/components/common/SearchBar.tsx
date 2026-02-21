@@ -32,6 +32,7 @@ export const SearchBar = forwardRef(
             placeholder={searchPlaceHolder}
             value={filterValue}
             onChange={(event) => setFilterAndTriggerSearch(event.target.value)}
+            style={{ fontSize: '0.7rem' }}
           />
         </Col>
         <Col className="p-0" xs={2}>

@@ -41,7 +41,7 @@ export const StreamsView = memo(({ category, onSelect }: StreamsViewProps) => {
       <div className="row mb-2">
         <SearchBar onSearch={setSearchValue} searchPlaceHolder="Search channel" />
       </div>
-      <Row className="g-4 mt-3 vertical-scroll">
+      <Row className="g-4 vertical-scroll">
         <StreamItems streams={filteredStreams} onSelect={onSelect} />
       </Row>
     </div>
