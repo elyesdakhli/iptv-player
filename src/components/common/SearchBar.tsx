@@ -25,8 +25,9 @@ export const SearchBar = forwardRef(
 
     return (
       <>
-        <Col className="p-10" xs={8} md={4}>
+        <Col className="p-10" xs={3} md={2}>
           <Form.Control
+            size="sm"
             type="text"
             placeholder={searchPlaceHolder}
             value={filterValue}
