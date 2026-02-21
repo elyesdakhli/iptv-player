@@ -45,6 +45,8 @@ function App() {
 
     const handleModeSelect = useCallback((selMode: AppMode) => {
         setMode(selMode);
+        setSelectedStream(null);
+        setSelectedCategory(null);
     }, []);
 
     useEffect(() => {

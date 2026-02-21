@@ -72,7 +72,7 @@ export const CategoriesView = memo(({ onSelect, clearCacheSignal }: CategoryView
           />
         </Row>
         <Row className="Horizontal-list-container">
-          <CategoryItems categories={filteredCategories} onSelect={onSelect} />
+          <CategoryItems key={mode} categories={filteredCategories} onSelect={onSelect} />
         </Row>
       </div>
     );
