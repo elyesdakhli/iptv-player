@@ -37,7 +37,7 @@ export const VodDetailsView = ({ stream }: { stream: VodStream }) => {
     vodInfo && (
       <>
         <LoadingSpinner visible={loading} />
-        <Card className="mt-2" style={{ fontSize: '0.78rem' }}>
+        <Card className="mt-2" style={{ fontSize: '1rem' }}>
           <div className="d-flex gap-2 p-2">
             <img
               src={noImage ? fallBackImage : proxyPrefix(vodInfo.movieImage)}
@@ -55,7 +55,7 @@ export const VodDetailsView = ({ stream }: { stream: VodStream }) => {
             </div>
           </div>
           {vodInfo.description && (
-            <div className="px-2 pb-2 text-muted" style={{ fontSize: '0.7rem', overflow: 'hidden', maxHeight: '4.5rem' }}>
+            <div className="px-2 pb-2 text-muted" style={{ fontSize: '0.9rem' }}>
               {vodInfo.description}
             </div>
           )}
