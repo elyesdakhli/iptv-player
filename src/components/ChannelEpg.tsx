@@ -28,24 +28,18 @@ export const ChannelEpg = ({ stream, className }: { stream: Stream, className?: 
     }, [source, stream]);
 
   return (
-    <div className={className}>
+    <div className={className} style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif", fontSize: '0.75rem' }}>
         <LoadingSpinner visible={loading} />
-        {shortEpgs &&
-            <>
-                {shortEpgs.map((shortEpg: ShortEpg) => (
-                    shortEpg &&
-                        <Card key={shortEpg.id} className="mt-2">
-                            <Card.Body>
-                                <Card.Title>{shortEpg.title}</Card.Title>
-                                <Card.Text><strong>Start:</strong> {shortEpg.start}</Card.Text>
-                                <Card.Text><strong>End:</strong> {shortEpg.end}</Card.Text>
-                                <Card.Text><strong>Description:</strong> {shortEpg.description}</Card.Text>
-                            </Card.Body>
-                        </Card>
-                ))}
-
-            </>
-        }
+        {shortEpgs?.map((shortEpg: ShortEpg) => (
+            shortEpg &&
+                <Card key={shortEpg.id} className="mt-2">
+                    <Card.Body className="py-2 px-3">
+                        <div className="fw-semibold mb-1" style={{ fontSize: '0.8rem' }}>{shortEpg.title}</div>
+                        <div className="text-muted">{shortEpg.start} → {shortEpg.end}</div>
+                        {shortEpg.description && <div className="mt-1">{shortEpg.description}</div>}
+                    </Card.Body>
+                </Card>
+        ))}
     </div>
     
   );
