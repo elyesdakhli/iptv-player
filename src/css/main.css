@@ -1,7 +1,3 @@
-body {
-    padding-top: env(safe-area-inset-top);
-}
-
 .vertical-scroll {
     overflow-y: scroll;
     -webkit-overflow-scrolling: touch;
