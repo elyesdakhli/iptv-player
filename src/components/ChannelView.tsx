@@ -39,8 +39,8 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
     <>
       {source && stream?.streamId && (
         <>
-          <Row className="justify-content-center py-2 mx-0">
-            <Col xs={12} sm={10} lg={8}>
+          <Row className="py-2 mx-0">
+            <Col xs={12}>
               <div className="d-flex align-items-center gap-2">
                 <Button onClick={onCancelPlay} variant="secondary" size="sm">Back</Button>
                 <div className="d-flex align-items-center gap-1 flex-grow-1 overflow-hidden">
@@ -51,34 +51,30 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
               </div>
             </Col>
           </Row>
-          <Row className="justify-content-center mt-3 mx-0">
-            <Col xs={12} sm={10} lg={8}>
+          <Row className="mt-2 mx-0">
+            <Col xs={12} md={8}>
               <ReactPlayer
-                url={streamUrl} // Supports HLS, DASH, etc.
+                url={streamUrl}
                 controls
-                playing // Auto-play (may require `muted` due to browser policies)
+                playing
                 width="100%"
                 height="auto"
                 config={{
                   file: {
-                    forceHLS: mode === "TV", // Force HLS.js for broader compatibility
-                    hlsOptions: {
-                      maxBufferSize: 10 * 1000 * 1000, // Adjust buffer size if needed
-                    },
-                    attributes: {
-                      crossOrigin: "anonymous",
-                      }
+                    forceHLS: mode === "TV",
+                    hlsOptions: { maxBufferSize: 10 * 1000 * 1000 },
+                    attributes: { crossOrigin: "anonymous" }
                   }
                 }}
                 onError={(error) => console.error(error)}
               />
-              {mode === "FILMS" && <VodDetailsView stream={stream as VodStream} />}
             </Col>
-            {mode === "TV" && (
-              <Col xs={12} sm={2} lg={3}>
-                <ChannelEpg stream={stream} className="vertical-scroll"/>
-              </Col>
-            )}
+            <Col xs={12} md={4}>
+              {mode === "TV"
+                ? <ChannelEpg stream={stream} className="vertical-scroll"/>
+                : <VodDetailsView stream={stream as VodStream} />
+              }
+            </Col>
           </Row>
         </>
       )}
