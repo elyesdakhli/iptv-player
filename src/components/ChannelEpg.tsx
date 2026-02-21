@@ -29,7 +29,7 @@ export const ChannelEpg = ({ stream, className }: { stream: Stream, className?: 
 
   return (
     <div className={className} style={{ fontFamily: "system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif", fontSize: '0.75rem' }}>
-        <div className="fw-semibold text-muted mb-1" style={{ fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>EPG</div>
+        <div className="fw-semibold text-muted mb-1 mt-3 mt-md-0" style={{ fontSize: '1rem', letterSpacing: '0.05em', textTransform: 'uppercase' }}>EPG</div>
         <LoadingSpinner visible={loading} />
         {shortEpgs?.map((shortEpg: ShortEpg) => (
             shortEpg &&
