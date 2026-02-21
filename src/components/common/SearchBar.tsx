@@ -25,7 +25,7 @@ export const SearchBar = forwardRef(
 
     return (
       <>
-        <Col className="p-10" xs={3} md={2}>
+        <Col className="p-10" xs={6} md={2}>
           <Form.Control
             size="sm"
             type="text"
