@@ -71,7 +71,7 @@ export const CategoriesView = memo(({ onSelect, clearCacheSignal }: CategoryView
             onSearch={search}
           />
         </Row>
-        <Row className="Horizontal-list-container">
+        <Row className="Horizontal-list-container mx-0">
           <CategoryItems key={mode} categories={filteredCategories} onSelect={onSelect} />
         </Row>
       </div>
