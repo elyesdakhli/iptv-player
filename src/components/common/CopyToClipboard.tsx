@@ -11,7 +11,7 @@ export default function CopyToClipboad({buttonLabel, textToCopy}: {buttonLabel: 
     }
     return (
         <>
-            <Button variant='secondary' size="sm" onClick={copy}>{copied ? 'Copied!' : buttonLabel}</Button>
+            <Button variant='outline-primary' size="sm" onClick={copy}>{copied ? 'Copied!' : buttonLabel}</Button>
         </>
     )
 }

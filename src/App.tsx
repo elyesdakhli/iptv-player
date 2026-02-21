@@ -73,7 +73,7 @@ function App() {
                     <Offcanvas.Body className="d-flex flex-column gap-3">
                         <SourcesManager onSourcesChanged={handleSourceChanged} />
                         {activeSource && (
-                            <Button variant="secondary" onClick={() => { handleClearData(); setShowSettings(false); }}>
+                            <Button variant="outline-primary" onClick={() => { handleClearData(); setShowSettings(false); }}>
                                 Clear & Reload
                             </Button>
                         )}
@@ -94,7 +94,7 @@ function App() {
                             checked={isDark}
                             onChange={handleToggleDark}
                         />
-                        <Button variant="outline-secondary" size="sm" onClick={() => setShowSettings(true)}>
+                        <Button variant="outline-primary" size="sm" onClick={() => setShowSettings(true)}>
                             <GearFill size={16} />
                         </Button>
                     </Col>

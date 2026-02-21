@@ -6,7 +6,7 @@ export const AppModeSelector = ({mode, onSelect}: {mode: AppMode; onSelect: (mod
         <DropdownButton title={mode || "Mode"} onSelect={(event) => {
                 onSelect(event as AppMode);
               }
-            } variant="secondary">
+            } variant="outline-primary">
             <Dropdown.Item eventKey="TV">TV</Dropdown.Item>
             <Dropdown.Item eventKey="FILMS">Films</Dropdown.Item>
             <Dropdown.Item eventKey="SERIES" disabled>Series</Dropdown.Item>

@@ -42,7 +42,7 @@ export const ChannelView = ({ stream, onCancelPlay }: ChannelViewProps) => {
           <Row className="py-2 mx-0">
             <Col xs={12}>
               <div className="d-flex align-items-center gap-3">
-                <Button onClick={onCancelPlay} variant="secondary" size="sm">Back</Button>
+                <Button onClick={onCancelPlay} variant="outline-primary" size="sm">Back</Button>
                 <div className="d-flex align-items-center gap-1 flex-grow-1 overflow-hidden">
                   <MyImage url={stream.streamIcon} height={20} width={20} fallbackImage={fallbackFilmImage}/>
                   <span className="fw-bold small text-truncate">{stream.name}</span>
